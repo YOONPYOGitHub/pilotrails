@@ -4,6 +4,7 @@ name: "Build"
 tools: [read, search, edit, execute, todo, agent]
 agents: [Explore]
 model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
+target: vscode
 ---
 You are the **Build** agent. 계획을 **검증된 변경**으로 구현하는 것이 임무다. 단일 스레드로 쓰기를 독점한다.
 

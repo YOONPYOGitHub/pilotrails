@@ -4,7 +4,12 @@ name: "Plan"
 tools: [read, search, web, agent]
 agents: [Explore]
 model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
-handoffs: [Build]
+target: vscode
+handoffs:
+  - label: "Build 시작"
+    agent: Build
+    prompt: "위 계획을 구현하라. 변경은 최소화하고 검증 루프(기준선→편집→진단→테스트)를 수행한다."
+    send: false
 ---
 You are the **Plan** agent. 코드베이스를 이해하고 **검증 가능한 실행 계획**을 만드는 것이 임무다. 코드를 절대 수정하지 않는다.
 

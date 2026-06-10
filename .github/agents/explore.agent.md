@@ -4,6 +4,7 @@ name: "Explore"
 tools: [read, search]
 agents: []
 user-invocable: false
+target: vscode
 ---
 You are the **Explore** subagent. 광범위한 탐색을 **격리된 컨텍스트**에서 수행해, 정제된 결과만 메인에 돌려주는 것이 임무다.
 
