@@ -20,6 +20,16 @@
 
 **적용 규칙**: 가역·저영향이라 자율 진행(C1). 신규 실패만 수정, 기존 실패는 기록만(C8).
 
+**평가 필드**
+
+- `entry_agent`: Plan
+- `allowed_agents`: [Explore]
+- `forbidden_actions`: Plan 단계의 edit/execute
+- `expected_artifacts`: 재현 테스트, 수정 diff
+- `pass_condition`: 재현 테스트 통과 + 신규 실패 0
+- `fail_condition`: 신규 실패 발생 또는 자가수정 2회 초과
+- `metrics`: test_pass, diff_size, self_fix_attempts, new_failures_introduced
+
 ---
 
 ## 2. 작은 기능 추가
@@ -34,6 +44,16 @@
 | 4 | Build | `edit`, `execute` | 구현 → 토글 동작 테스트 추가 → 검증 루프 |
 
 **적용 규칙**: 계획은 채팅/PR 설명 같은 스크래치에 남김(C2 — always-on 파일엔 넣지 않음). 모드 전환은 작업 경계에서만(C4).
+
+**평가 필드**
+
+- `entry_agent`: Plan → Build
+- `allowed_agents`: [Explore]
+- `forbidden_actions`: Plan 단계의 edit/execute, 계획을 always-on 파일에 기록
+- `expected_artifacts`: 토글 구현 diff, 동작 테스트
+- `pass_condition`: 기능 동작 테스트 통과 + 신규 실패 0
+- `fail_condition`: 신규 실패 발생 또는 모드 경계 외 전환
+- `metrics`: test_pass, diff_size, agent_loops
 
 ---
 
@@ -50,6 +70,16 @@
 
 **적용 규칙**: 코드 작성은 절대 위임하지 않음 — Explore는 read-only 탐색만(C3). 큰 변경일수록 외과적으로, 정리는 별도 PR(D6).
 
+**평가 필드**
+
+- `entry_agent`: Plan
+- `allowed_agents`: [Explore]
+- `forbidden_actions`: 코드 작성 위임, 비가역 단계 무승인 실행
+- `expected_artifacts`: repo map 갱신, 단계별 커밋, 마이그레이션 diff
+- `pass_condition`: 각 단위 검증 통과 후 커밋, 신규 실패 0
+- `fail_condition`: 비가역 작업 무승인 실행 또는 단위 검증 실패 누적
+- `metrics`: diff_size, human_interventions, new_failures_introduced
+
 ---
 
 ## 4. 테스트 실패 디버깅
@@ -65,6 +95,16 @@
 
 **적용 규칙**: 검증 루프 상한이 핵심. 추측으로 무한히 헤집지 않음(C8).
 
+**평가 필드**
+
+- `entry_agent`: Build
+- `allowed_agents`: [Explore]
+- `forbidden_actions`: 기존(pre-existing) 실패 수정, 자가수정 2회 초과
+- `expected_artifacts`: 신규/기존 실패 분류표, 수정 diff, (초과 시) [실패 리포트](../.github/skills/test-debugging/templates/failure-report.md)
+- `pass_condition`: 신규 실패 해소 + 기존 실패 보존
+- `fail_condition`: 자가수정 2회 초과 후에도 동일 접근 반복
+- `metrics`: self_fix_attempts, new_failures_introduced, test_pass
+
 ---
 
 ## 5. 문서 편집
@@ -78,6 +118,16 @@
 | 3 | Build | — | 명령·경로가 실제와 일치하는지 확인 후 커밋 |
 
 **적용 규칙**: 문서도 "근거 있는 변경". 미검증 수치는 "미검증"으로 표기.
+
+**평가 필드**
+
+- `entry_agent`: Ask 또는 Build
+- `allowed_agents`: (없음)
+- `forbidden_actions`: 미검증 수치 단정, 백틱 파일명
+- `expected_artifacts`: 문서 diff
+- `pass_condition`: 명령·경로가 실제와 일치, 링크·표 포맷 준수
+- `fail_condition`: 미검증 수치를 검증된 것처럼 표기
+- `metrics`: diff_size, human_interventions
 
 ---
 

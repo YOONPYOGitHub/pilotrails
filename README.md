@@ -9,6 +9,8 @@ GitHub Copilot(GHCP)에서 잘 작동하는 **AI 코딩 에이전트 하네스**
 | [docs/01-harness-research.md](docs/01-harness-research.md) | 하네스 정의(narrow=eval vs broad=런타임), 인기 하네스 Star·아키텍처·강점 분석(런타임·eval·라우팅·CI 계열) 및 베스트 아이디어 종합·학습 순서 |
 | [docs/02-ghcp-harness-design.md](docs/02-ghcp-harness-design.md) | 위 강점을 GHCP 커스터마이징 레이어로 재현하는 설계 청사진(모드 분리·서브에이전트·검증 루프·메모리·라우팅) |
 | [docs/03-synergy-conflict-design.md](docs/03-synergy-conflict-design.md) | 아이디어 **조합**의 시너지/상충 분석 — 6개 텐션 축, 상충 매트릭스, 코딩에 멀티에이전트·중간 모델전환 비채택 결론, 다이얼 기본 구성 |
+| [docs/04-operational-validation.md](docs/04-operational-validation.md) | 실제 VS Code/Copilot에서 에이전트·지침·스킬이 로드·동작하는지 확인하는 수동 운영 검증 체크리스트 |
+| [docs/05-decision-log.md](docs/05-decision-log.md) | 외부 피드백의 채택·기각·보류 결정 로그(근거 포함) |
 
 ## 한눈에 보기 (Star 검증값, 2026-06-11)
 
@@ -55,8 +57,22 @@ GitHub Copilot(GHCP)에서 잘 작동하는 **AI 코딩 에이전트 하네스**
 | [.github/agents/ask.agent.md](.github/agents/ask.agent.md) | Ask — 읽기 전용 Q&A(`[read, search, web]`) |
 | [.github/agents/explore.agent.md](.github/agents/explore.agent.md) | Explore — 서브에이전트(`[read, search]`, user-invocable:false) |
 | [.github/instructions/](.github/instructions/) | 경로별 규칙(typescript·tests·docs, `applyTo`) |
-| [.github/skills/](.github/skills/) | 온디맨드 절차(test-debugging·release-checklist) |
+| [.github/skills/](.github/skills/) | 온디맨드 절차(test-debugging·release-checklist·repo-map) |
 | [examples/scenarios.md](examples/scenarios.md) | 5개 드라이런 시나리오(버그·기능·리팩터링·테스트·문서) |
+
+## Scope and non-goals
+
+**현재 보장하는 것**
+
+- 이 하네스는 `target: vscode` 중심이다. VS Code 대화형 워크플로(handoffs 버튼, 서브에이전트 호출)을 전제로 설계됐다.
+- 항상 로드되는 전역 지침은 [.github/copilot-instructions.md](.github/copilot-instructions.md) **하나로** 유지한다. `AGENTS.md`는 현재 추가하지 않는다(이중 항상로딩은 안티패턴).
+- 현재 목표는 Copilot custom agents·instructions·skills를 조합한 **policy harness**다.
+
+**현재 보장하지 않는 것 (non-goals)**
+
+- 이 저장소는 **자체 에이전트 런타임이 아니다.** SWE-agent/OpenHands처럼 sandbox·event-loop·ACI를 직접 구현하지 않는다.
+- GitHub Copilot **cloud agent는 future target**이며, `handoffs`·`web`·`todo` 동작 차이가 있으므로 별도 검증 전에는 동일 동작을 보장하지 않는다(상세: [docs/02 §3.1](docs/02-ghcp-harness-design.md)).
+- CI hooks, repo-map generator, sandbox guardrail은 **future roadmap**이다(근거: [docs/05-decision-log.md](docs/05-decision-log.md) 보류 항목).
 
 ## 상태
 
