@@ -9,7 +9,13 @@
 // PROTECTED는 scripts/harness-doctor.mjs가 import 하여
 // "문서가 주장하는 보호 경로 ↔ hook이 실제 차단하는 경로" 정합을 검사한다(§3.11).
 
-import { pathToFileURL } from "node:url";
+import { pathToFileURL, fileURLToPath } from "node:url";
+import { dirname, resolve, relative, isAbsolute } from "node:path";
+
+// 보호 규칙은 명시적으로 "레포 루트 기준 경로"다. hook 파일이 <root>/.github/hooks/에
+// 있으므로 두 단계 위가 레포 루트. cwd가 하위 디렉터리여도 동일하게 판단하고,
+// 하위 프로젝트의 동명 파일(예: sandbox/x/feature_list.json)을 과차단하지 않는다.
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 /** @typedef {{ path: string, decision: "deny"|"ask", reason: string }} ProtectedRule */
 
@@ -38,7 +44,7 @@ export const PROTECTED = [
 const WRITE_TOOLS =
   /^(Edit|Write|MultiEdit|create_file|replace_string_in_file|multi_replace_string_in_file|insert_edit_into_file|apply_patch|str_replace)/i;
 
-/** stdin에서 들어온 도구 입력에서 파일 경로 후보를 뽑아 워크스페이스 상대 경로로 정규화. */
+/** stdin에서 들어온 도구 입력에서 파일 경로 후보를 뽑아 **레포 루트 상대 경로**로 정규화. */
 export function extractPaths(toolInput = {}) {
   const candidates = [
     toolInput.file_path,
@@ -49,11 +55,10 @@ export function extractPaths(toolInput = {}) {
       : []),
   ].filter((v) => typeof v === "string" && v.length > 0);
 
-  const cwd = process.cwd().replace(/\\/g, "/");
   return candidates.map((p) => {
-    let norm = p.replace(/\\/g, "/").replace(/^file:\/\//, "");
-    if (norm.startsWith(cwd + "/")) norm = norm.slice(cwd.length + 1);
-    return norm.replace(/^\.\//, "");
+    const cleaned = p.replace(/\\/g, "/").replace(/^file:\/\//, "");
+    const abs = isAbsolute(cleaned) ? cleaned : resolve(process.cwd(), cleaned);
+    return relative(REPO_ROOT, abs).replace(/\\/g, "/");
   });
 }
 
@@ -62,7 +67,7 @@ export function evaluate(paths) {
   let matched = null;
   for (const p of paths) {
     for (const rule of PROTECTED) {
-      if (p === rule.path || p.endsWith("/" + rule.path)) {
+      if (p === rule.path) {
         if (!matched || (matched.decision === "ask" && rule.decision === "deny")) {
           matched = rule;
         }

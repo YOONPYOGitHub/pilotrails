@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": 1,
+  "description": "task-cli 기능 레지스트리. 하네스의 상태-소스 패턴(docs/02 §3.10)을 하위 프로젝트에서 dogfood. 이 파일은 루트 하네스의 정규 상태 소스가 아니며, /finish 단일 경로 강제 대상이 아니다.",
+  "statuses": ["not-started", "in-progress", "done", "deferred"],
+  "features": [
+    {
+      "id": "store-add",
+      "title": "작업 추가(add) — 증가 id·title 트림·빈값 거부",
+      "path": "src/store.ts",
+      "status": "done",
+      "priority": "P0",
+      "deps": [],
+      "acceptance": "add가 id를 1부터 증가 부여, title 트림, 공백 title은 throw"
+    },
+    {
+      "id": "store-list",
+      "title": "목록·필터(list) — all/active/done",
+      "path": "src/store.ts",
+      "status": "done",
+      "priority": "P0",
+      "deps": ["store-add"],
+      "acceptance": "filter로 active/done/all 분리 반환"
+    },
+    {
+      "id": "store-complete",
+      "title": "완료 표시(complete)",
+      "path": "src/store.ts",
+      "status": "done",
+      "priority": "P1",
+      "deps": ["store-add"],
+      "acceptance": "done 플래그 set, 없는 id는 throw"
+    },
+    {
+      "id": "store-remove",
+      "title": "삭제(remove)",
+      "path": "src/store.ts",
+      "status": "done",
+      "priority": "P1",
+      "deps": ["store-add"],
+      "acceptance": "항목 제거, 없는 id는 throw"
+    },
+    {
+      "id": "persist-json",
+      "title": "JSON 파일 영속화",
+      "path": "src/persist.ts",
+      "status": "done",
+      "priority": "P1",
+      "deps": ["store-add"],
+      "acceptance": "loadStore/saveStore 라운드트립, 파일 없으면 빈 store"
+    },
+    {
+      "id": "cli",
+      "title": "CLI 어댑터(add/list/done/rm/help)",
+      "path": "src/cli.ts",
+      "status": "done",
+      "priority": "P0",
+      "deps": ["store-list", "store-complete", "store-remove", "persist-json"],
+      "acceptance": "argv 파싱·명령 디스패치, 직접 실행 가드, E2E 스모크 통과"
+    }
+  ]
+}
