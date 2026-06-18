@@ -63,6 +63,8 @@ GitHub Copilot(GHCP)에서 잘 작동하는 **AI 코딩 에이전트 하네스**
 | [.github/prompts/finish.prompt.md](.github/prompts/finish.prompt.md) | `/finish` — 검증→상태 갱신→handoff→커밋 단일 완료 경로 |
 | [feature_list.json](feature_list.json) | 하네스 자산 상태의 단일 정본(canonical state) |
 | [scripts/harness-doctor.mjs](scripts/harness-doctor.mjs) | 거버넌스 검사 — 문서↔훅 보호경로·문서 번호·사장 자산 정합 (`node`로 실행) |
+| [scripts/smoke.mjs](scripts/smoke.mjs) | 검증 앱 스모크 — `sandbox/*` 앱 테스트를 루트에서 일괄 실행(경량 센서) |
+| [sandbox/task-cli/](sandbox/task-cli/) | 하네스 dogfood 검증 앱(Task CLI) + [세션 저널](sandbox/task-cli/HARNESS-SESSION-LOG.md) |
 | [examples/scenarios.md](examples/scenarios.md) | 5개 드라이런 시나리오(버그·기능·리팩터링·테스트·문서) |
 
 ## Scope and non-goals

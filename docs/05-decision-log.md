@@ -34,6 +34,16 @@
 | "frontmatter가 한 줄로 깨졌다"는 주장 | 바이트/라인 기준으로 검증한 결과 거짓이다. 모든 `.agent.md`·`.instructions.md`·`SKILL.md`의 YAML 경계가 정상이고 진단 오류가 0건이다. 다시 수정 대상으로 삼지 않는다. |
 | `target: cloud` 값 | 잘못된 값이다. 유효 값은 `vscode` 또는 `github-copilot`뿐이므로 채택하지 않는다. |
 
+### 2026-06-18 dogfood — 검증 앱 적용에서 관찰된 하네스 결정
+
+하네스를 실제 앱 구현([../sandbox/task-cli](../sandbox/task-cli))에 적용(dogfood)하면서 관찰된 결정. 스티어링 루프([06 §2](06-harness-operating-plan.md))의 산출물이며, 관찰 근거는 [세션 저널](../sandbox/task-cli/HARNESS-SESSION-LOG.md)에 있다.
+
+| 항목 | 결정 | 근거 |
+| --- | --- | --- |
+| protect-paths 매칭을 레포 루트 정확 매칭으로 수정 | 채택 | 가드가 `endsWith("/feature_list.json")`로 매칭해 하위 프로젝트의 동명 파일(`sandbox/task-cli/feature_list.json`) 생성까지 `deny`로 **과발화**했다. 정당한 작업을 막는 C13 과발화 안티패턴의 재발(앞서 validate-docs에서 1회)이라, hook 위치 기준 `REPO_ROOT`를 도출해 cwd와 무관하게 루트 파일만 보호하도록 좁혔다. 검증: 루트 deny·하위 allow·cwd 무관·harness-doctor exit 0. |
+| 검증 앱은 `sandbox/`에 두고 루트 하네스 게이트 밖에 둠 | 채택 | 루트 protect-paths/verify-done/harness-doctor는 **하네스 자산**만 강제 대상으로 한다. 앱은 자체 vitest로 검증하고, 루트 거버넌스를 침범하지 않는다(스코핑 의도 유지). |
+| 검증 앱 추가로 축 ⑤(센서) 트리거 충족 → 경량 스모크만 도입 | 채택 | 앱(실행 대상)이 생겨 [06 §5](06-harness-operating-plan.md)의 ⑤ 도입 트리거가 충족됐다. 단 풀 CI는 과설계라, 앱 테스트를 루트에서 한 번에 돌리는 **스모크 스크립트 하나**만 추가한다([../scripts/smoke.mjs](../scripts/smoke.mjs)). 다중 앱·회귀 반복 관찰 시 확장. |
+
 ## 보류 (Deferred)
 
 | 항목 | 근거 |
