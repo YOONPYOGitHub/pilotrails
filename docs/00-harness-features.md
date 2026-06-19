@@ -1,91 +1,70 @@
-# 하네스 기능 레퍼런스 (현재 동작 기준)
+# 하네스 기능 레퍼런스
 
-이 문서는 GHCP 하네스가 **지금 무엇을 하는가**를 기능 중심으로 정리한다. 설계 근거·외부 사례 비교는 [01-harness-research.md](01-harness-research.md) 이하 배경 문서에 있고, 여기서는 **현재 저장소에 구현되어 동작하는 기능**만 다룬다.
+이 문서는 GHCP Harness를 clone했을 때 바로 사용할 수 있는 커스터마이징 자산과 운영 규칙을 설명한다.
 
-> 한 줄 요약: 별도 런타임을 만들지 않고 `.github/` 커스터마이제이션만으로 **계획 → 구현 → 검증 → 완료**를 규율로 강제하는 정책 레이어다.
+## 1. Copilot-native 정책 레이어
 
-## 1. 모드 분리 (3 + 1)
+GHCP Harness는 별도 에이전트 런타임이 아니다. VS Code Copilot이 인식하는 `.github/` 자산을 조합해, 대화형 코딩 작업에 다음 규칙을 얹는다.
 
-작업 성격에 따라 권한이 다른 에이전트를 골라 쓴다. 각 모드는 `*.agent.md`의 `tools` 허용목록으로 **할 수 있는 일이 물리적으로 제한**된다.
+- 작업을 **계획 -> 구현 -> 검증 -> 완료** 흐름으로 나눈다.
+- 파일 종류와 작업 단계에 따라 **다른 지침**을 로드한다.
+- 일부 규칙은 Agent hooks와 CI로 **기계적으로 검사**한다.
+- 상태 변경과 완료 처리를 한 경로로 모아 운영 드리프트를 줄인다.
 
-| 모드 | 용도 | 도구 권한 |
+## 2. 작업 모드
+
+| 모드 | 역할 | 핵심 제한 |
 | --- | --- | --- |
-| [Plan](../.github/agents/plan.agent.md) | 읽기 전용 탐색·계획 수립 | `read, search, web, agent` (편집 불가) |
-| [Build](../.github/agents/build.agent.md) | 구현 + 검증 | `read, search, edit, execute, todo, agent` |
-| [Ask](../.github/agents/ask.agent.md) | 읽기 전용 Q&A | `read, search, web` |
-| [Explore](../.github/agents/explore.agent.md) | 광범위 탐색 서브에이전트 | `read, search` (사용자 직접 호출 불가) |
+| Plan | 읽기 전용 탐색과 실행 계획 수립 | 파일 편집·명령 실행 없음 |
+| Build | 구현, 테스트, 검증 루프 수행 | 쓰기는 메인 에이전트가 단일 스레드로 수행 |
+| Ask | 코드 변경 없는 질문 답변 | 읽기·검색 중심 |
+| Explore | 넓은 코드베이스 탐색 서브에이전트 | read-only, 사용자 직접 호출 없음 |
 
-- **코드 작성은 단일 스레드(Build)가 독점**한다. 서브에이전트(Explore)는 read-only 전용이라 쓰기를 위임하지 않는다.
-- Explore는 넓은 탐색을 **격리된 컨텍스트**에서 수행해 메인 대화의 load-bearing 컨텍스트를 보호한다.
+모드 정의는 [.github/agents/](../.github/agents/)에 있다. 실제 VS Code에서 인식되는지 확인하는 절차는 [04-operational-validation.md](04-operational-validation.md)를 따른다.
 
-## 2. 검증 루프 (완료의 정의)
+## 3. 검증 루프
 
-"컴파일된다"가 아니라 **(1) 변경을 diff로 명확히 하고 (2) 관련 테스트를 실제로 돌려 통과**해야 완료다.
+완료 기준은 "응답이 그럴듯한가"가 아니라 **실제 검증 명령이 통과했는가**다.
 
+```text
+기준선 확인 -> 편집 -> 진단 -> 테스트 -> 신규 실패만 수정 -> 통과 증거 기록
 ```
-기준선(테스트·진단 1회) → 편집 → 진단(get_errors) → 테스트(execute)
-   → 신규 실패만 자가수정(최대 2회)
-   → 안 되면 동일 접근 중단 + 로그·diff·가설 동봉해 에스컬레이트
-```
 
-- **기준선 우선**: 이미 깨져 있던(pre-existing) 실패는 건드리지 않고 기록만 한다.
-- **신규 실패만** 고친다. 같은 실패 자가수정은 **최대 2회**로 상한.
-- 테스트가 없으면 `재현 → 수정 → 회귀 방지 테스트 추가`.
+- 수정 전 기준선을 잡아 기존 실패와 신규 실패를 구분한다.
+- 같은 실패를 반복 수정하는 횟수는 제한한다.
+- 테스트가 없으면 재현 테스트나 최소 검증 절차를 먼저 만든다.
+- 완료 보고에는 실행한 명령과 결과를 남긴다.
 
-## 3. 기계적 강제 — Agent Hooks
+## 4. Agent hooks 기반 가드
 
-선언적 규칙("에이전트가 따라줄 것")을 넘어, 일부 규칙은 [.github/hooks/](../.github/hooks/)가 **기계적으로 강제**한다. `hooks.json`이 라이프사이클 이벤트에 스크립트를 배선한다.
+[.github/hooks/](../.github/hooks/)는 로컬 Agent hooks(Preview)가 활성화된 환경에서 일부 규칙을 자동 검사한다.
 
-| 이벤트 | 스크립트 | 하는 일 |
-| --- | --- | --- |
-| `SessionStart` | [session-ready.mjs](../.github/hooks/session-ready.mjs) | 최신 handoff·하네스 상태를 세션 시작 시 주입 |
-| `PreToolUse` | [protect-paths.mjs](../.github/hooks/protect-paths.mjs) | **보호 경로 차단** — 비가역·불변 자산 편집을 deny/ask |
-| `PostToolUse` | [validate-docs.mjs](../.github/hooks/validate-docs.mjs) | 문서 편집 후 링크·포맷 검사 |
-| `PreCompact` | [precompact-handoff.mjs](../.github/hooks/precompact-handoff.mjs) | 압축 직전 load-bearing 컨텍스트를 handoff 초안으로 덤프 |
-| `Stop` | [verify-done.mjs](../.github/hooks/verify-done.mjs) | **"검증 없는 완료" 차단** — 미커밋 + 자산 변경 시 게이트 |
-
-> 기계적 강제는 로컬 **Agent hooks(Preview)** 활성 시 작동한다. 비활성 환경에서는 같은 규칙이 선언적 정책으로 폴백하고, [CI](../.github/workflows/harness-ci.yml)가 push·PR마다 원격에서 보완 강제한다.
-
-## 4. 보호 경로 (비가역 자산 가드)
-
-[protect-paths.mjs](../.github/hooks/protect-paths.mjs)는 정해진 경로의 편집을 차단한다. `exact`(정확 일치)와 `prefix`(접두 일치) 두 매칭을 지원한다.
-
-| 경로 | 결정 | 이유 |
-| --- | --- | --- |
-| `feature_list.json` | deny | 상태 단일 정본 — `/finish`로만 변경 |
-| `.github/copilot-instructions.md` | ask | always-on 전역 규칙 |
-| `docs/05-decision-log.md` | ask | 결정 이력 보존 |
-| `.github/hooks/` (prefix) | ask | 가드 자신을 보호 |
-
-> 새 보호 경로를 추가하면 그 문자열이 [02 §3.9](02-ghcp-harness-design.md)에 명시돼 있어야 [harness-doctor](../scripts/harness-doctor.mjs)가 통과한다(문서↔훅 정합 검사).
-
-## 5. 상태 거버넌스 (단일 경로)
-
-- 하네스 자산 상태의 **단일 정본은 [feature_list.json](../feature_list.json)**.
-- `status` 변경은 [/finish](../.github/prompts/finish.prompt.md) **한 경로로만** 한다(검증 → 상태 갱신 → handoff → 커밋).
-- 직접 편집은 `PreToolUse` 가드가 차단한다.
-
-## 6. 메모리 표준
-
-- **항상 로딩 파일은 단 하나** — [copilot-instructions.md](../.github/copilot-instructions.md)에 변하지 않는 최소 불변 규칙만 둔다(`AGENTS.md`와 동시 사용 금지).
-- 경로별 규칙은 [.github/instructions/](../.github/instructions/)의 `*.instructions.md`가 `applyTo` 글롭으로 해당 파일에만 적용.
-- 자주 쓰는 절차는 [.github/skills/](../.github/skills/)의 `SKILL.md`로 온디맨드 로딩.
-
-## 7. 자기 진단 (드리프트 방지)
-
-하네스 자신이 문서와 어긋나는 것을 센서로 막는다. 빌드 러너 없이 `node`로 실행한다.
-
-| 명령 | 검사 내용 |
+| 영역 | 동작 |
 | --- | --- |
-| `node scripts/harness-doctor.mjs` | 문서↔훅 보호경로 정합, 문서 수치 일치, 죽은 자산 탐지 |
-| `node --test tests/` | hook 순수 로직 단위 테스트(보호경로 평가·문서 링크) |
-| `node scripts/smoke.mjs` | `sandbox/*` 검증 앱 테스트 일괄 실행 |
+| 보호 경로 | 핵심 파일 직접 편집을 deny/ask로 차단 |
+| 문서 검사 | 마크다운 상대 링크 깨짐을 경고 |
+| 완료 게이트 | 검증 없이 하네스 자산 변경을 끝내는 흐름을 차단 |
+| 컨텍스트 보존 | 세션 시작·압축 직전에 필요한 상태를 주입 |
 
-## 8. 위험 등급제
+hooks가 비활성인 환경에서는 같은 규칙이 지침으로만 작동한다. 원격에서는 CI가 일부 검사를 보완한다.
 
-- **가역·저영향**(파일 편집, 읽기, 테스트 실행)은 자율 진행.
-- **비가역·공유 영향**(push, `--force`, `reset --hard`, 파일·브랜치 삭제, 인프라 변경, 비밀 취급)은 항상 사용자 승인.
+## 5. 보호 경로
 
----
+| 경로 | 정책 | 이유 |
+| --- | --- | --- |
+| `feature_list.json` | deny | 하네스 상태의 단일 정본 |
+| `.github/copilot-instructions.md` | ask | 항상 로드되는 전역 규칙 |
+| `docs/05-decision-log.md` | ask | 설계 결정 기록 |
+| `.github/hooks/` | ask(prefix) | 가드 스크립트 자체 보호 |
 
-더 깊은 설계 근거는 [02 설계서](02-ghcp-harness-design.md)·[03 시너지/상충](03-synergy-conflict-design.md)을, 직접 굴려보는 법은 [HOWTO-run-harness.md](HOWTO-run-harness.md)를 본다.
+보호 경로 문자열은 [02-ghcp-harness-design.md](02-ghcp-harness-design.md)에 명시되어 있어야 `harness-doctor`가 통과한다.
+
+## 6. 자기 진단
+
+| 명령 | 확인 내용 |
+| --- | --- |
+| `node scripts/harness-doctor.mjs` | 보호 경로, 문서/구현 정합, 죽은 자산 |
+| `node --test tests/` | hook 순수 로직 단위 테스트 |
+| `node scripts/smoke.mjs` | `sandbox/*` 검증 앱 테스트 |
+
+자세한 실행 순서는 [08-run-harness.md](08-run-harness.md)를 본다.

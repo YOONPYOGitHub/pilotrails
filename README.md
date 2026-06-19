@@ -4,19 +4,51 @@ GitHub Copilot(GHCP)에서 잘 작동하는 **AI 코딩 에이전트 하네스**
 
 ## Quick Start (clone & use)
 
-이 하네스는 별도 설치형 프로그램이 아니라 `.github/` 커스터마이제이션으로 동작한다. 새 프로젝트에 적용하는 가장 빠른 길:
+이 하네스는 별도 설치형 프로그램이 아니라 VS Code Copilot이 읽는 커스터마이제이션 자산으로 동작한다. 이 저장소를 직접 확인하는 가장 빠른 길:
 
 ```bash
 # 1) 이 저장소를 받는다
 git clone https://github.com/YOONPYOGitHub/harness.git
 cd harness
 
-# 2) 거버넌스·hook 로직이 정상인지 확인(빌드 러너 불필요, Node 18+)
+# 2) 거버넌스·hook 로직이 정상인지 확인(Node 18+)
 node scripts/harness-doctor.mjs   # 기대: "OK — harness-doctor 통과"
 node --test tests/                # 기대: hook 단위 테스트 통과
+node scripts/smoke.mjs            # 기대: sandbox 앱 테스트 통과(또는 대상 없음)
 ```
 
-**기존 프로젝트에 하네스만 얹으려면** `.github/`(agents·instructions·skills·hooks·prompts·copilot-instructions.md)와 `scripts/harness-doctor.mjs`, `feature_list.json`을 대상 저장소 루트로 복사한 뒤, VS Code에서 그 저장소를 **워크스페이스 루트로 열면** 에이전트·규칙·hooks가 자동 인식된다. 조작법은 [docs/HOWTO-run-harness.md](docs/HOWTO-run-harness.md) 참고.
+VS Code에서 이 저장소를 **워크스페이스 루트로 열면** 에이전트 선택기에 `Workspace` 출처의 Ask·Build·Explore·Plan이 표시된다. 해당 모드를 선택해 채팅하면 `.github/`의 에이전트·지침·스킬·hooks가 함께 적용된다.
+
+## 다른 프로젝트에 적용하기
+
+현재는 `harness init` 같은 설치 CLI를 제공하지 않는다. 복사 방식으로 적용한다.
+
+**권장: 거버넌스 포함 풀 번들**
+
+다른 저장소에서도 `harness-doctor`, hook 테스트, CI까지 그대로 쓰려면 아래 묶음을 대상 저장소 루트로 복사한다.
+
+```text
+.github/
+docs/
+examples/
+scripts/
+tests/
+feature_list.json
+```
+
+**경량 적용: Copilot 에이전트만 사용**
+
+Plan/Build/Ask 같은 에이전트와 기본 지침만 쓰고, CI/doctor/smoke는 직접 맞출 계획이라면 아래만 먼저 옮길 수 있다.
+
+```text
+.github/agents/
+.github/instructions/
+.github/skills/
+.github/prompts/
+.github/copilot-instructions.md
+```
+
+이 경우 `.github/hooks/`, `.github/workflows/`, `scripts/harness-doctor.mjs`, `feature_list.json`은 대상 프로젝트 구조에 맞게 함께 옮기거나 조정해야 한다. 자세한 조작법은 [docs/08-run-harness.md](docs/08-run-harness.md)를 참고한다.
 
 > 전제: VS Code + GitHub Copilot Chat. 기계적 강제(hooks)는 로컬 Agent hooks(Preview) 활성 시 작동하며, 비활성 환경에서는 선언적 정책으로 폴백한다. CI(`.github/workflows/harness-ci.yml`)는 push·PR마다 거버넌스 검사를 원격에서 강제한다.
 
@@ -24,18 +56,31 @@ node --test tests/                # 기대: hook 단위 테스트 통과
 
 ## 문서
 
-**기능 먼저** — 이 하네스가 지금 무엇을 하는지부터 본다. 아래 설계·리서치 문서는 *왜 그렇게 만들었는지*에 대한 배경 자료다.
+문서는 **사용자용 → 설계·운영 → 배경 아카이브** 순서로 읽으면 된다.
+
+### 사용자용
 
 | 문서 | 내용 |
 | --- | --- |
-| [docs/00-harness-features.md](docs/00-harness-features.md) | **기능 레퍼런스(현재 동작 기준)** — 모드 분리·검증 루프·Agent hooks·보호 경로·상태 거버넌스·메모리·자기 진단 |
-| [docs/01-harness-research.md](docs/01-harness-research.md) | (배경) 하네스 정의(narrow=eval vs broad=런타임)와 외부 하네스 아키텍처·강점 리서치 |
-| [docs/02-ghcp-harness-design.md](docs/02-ghcp-harness-design.md) | (배경) 위 강점을 GHCP 커스터마이징 레이어로 재현하는 설계 청사진(모드 분리·서브에이전트·검증 루프·메모리·라우팅) |
-| [docs/03-synergy-conflict-design.md](docs/03-synergy-conflict-design.md) | (배경) 아이디어 **조합**의 시너지/상충 분석 — 6개 텐션 축, 상충 매트릭스, 코딩에 멀티에이전트·중간 모델전환 비채택 결론, 다이얼 기본 구성 |
-| [docs/04-operational-validation.md](docs/04-operational-validation.md) | 실제 VS Code/Copilot에서 에이전트·지침·스킬이 로드·동작하는지 확인하는 수동 운영 검증 체크리스트 |
-| [docs/05-decision-log.md](docs/05-decision-log.md) | 외부 피드백의 채택·기각·보류 결정 로그(근거 포함) |
-| [docs/06-harness-operating-plan.md](docs/06-harness-operating-plan.md) | 하네스를 **잘 작동시키는** 운영·진화 규율 — 스티어링 루프, 컴포넌트 ablation, 거버넌스 게이트, 의도적 보류와 도입 트리거 |
-| [docs/07-deferred-backlog.md](docs/07-deferred-backlog.md) | (백로그) 현재 **보류**한 확장 후보와 각각의 도입 트리거 — init CLI·MCP·텔레메트리·플러그인·eval 실행기 등 |
+| [docs/00-harness-features.md](docs/00-harness-features.md) | 현재 기능 레퍼런스 — 모드 분리, 검증 루프, Agent hooks, 보호 경로, 상태 거버넌스 |
+| [docs/08-run-harness.md](docs/08-run-harness.md) | 실행·테스트 가이드 — clone 후 확인, VS Code에서 로드 확인, smoke 실행 |
+
+### 설계·운영
+
+| 문서 | 내용 |
+| --- | --- |
+| [docs/02-ghcp-harness-design.md](docs/02-ghcp-harness-design.md) | 하네스 구조 — `.github/` 자산, 데이터 흐름, 보호 경로, CI/doctor 정합성 |
+| [docs/04-operational-validation.md](docs/04-operational-validation.md) | 운영 검증 체크리스트 — VS Code/Copilot에서 실제 인식 여부 확인 |
+| [docs/06-harness-operating-plan.md](docs/06-harness-operating-plan.md) | 운영 원칙 — 관찰된 실패 기반 개선, 검증 게이트, 확장 기준 |
+
+### 배경·아카이브
+
+| 문서 | 내용 |
+| --- | --- |
+| [docs/01-harness-research.md](docs/01-harness-research.md) | 설계 배경 리서치 — 하네스 문제 공간과 참고한 설계 패턴 |
+| [docs/03-synergy-conflict-design.md](docs/03-synergy-conflict-design.md) | 설계 결정 근거 — 채택/비채택 판단 기준과 상충 해소 원칙 |
+| [docs/05-decision-log.md](docs/05-decision-log.md) | 결정 로그 — 보호 경로, hooks, CI, 문서 정책의 결정 근거 |
+| [docs/07-deferred-backlog.md](docs/07-deferred-backlog.md) | 보류 백로그 — 지금 넣지 않는 확장 후보와 도입 트리거 |
 
 ## 설계 핵심
 
@@ -44,9 +89,9 @@ node --test tests/                # 기대: hook 단위 테스트 통과
 - **검증 루프**: 기준선 → 편집 → 진단 → 테스트 → 자기수정(신규 실패만, 최대 2회) → 에스컬레이트
 - **메모리 표준**: 항상 로딩 파일은 **단 하나**(`copilot-instructions.md` 또는 `AGENTS.md` — 둘 다 쓰지 않음) + 경로별 `*.instructions.md` + 온디맨드 `SKILL.md`
 
-## 구현 파일 (`.github/`)
+## 구현·운영 파일
 
-설계를 VS Code/Copilot 커스터마이제이션 파일로 구현한 결과물. 모든 파일은 표준 인식 경로인 `.github/` 아래에 있다.
+하네스 본체는 VS Code/Copilot이 인식하는 `.github/` 자산이고, `scripts/`·`tests/`·`sandbox/`는 그 자산을 검증하고 설명하기 위한 보조 계층이다.
 
 | 파일 | 역할 |
 | --- | --- |
@@ -82,7 +127,7 @@ node --test tests/                # 기대: hook 단위 테스트 통과
 
 **현재 보장하지 않는 것 (non-goals)**
 
-- 이 저장소는 **자체 에이전트 런타임이 아니다.** SWE-agent/OpenHands처럼 sandbox·event-loop·ACI를 직접 구현하지 않는다.
+- 이 저장소는 **자체 에이전트 런타임이 아니다.** sandbox·event-loop·ACI를 직접 구현하지 않고, VS Code Copilot 커스터마이징 계층에 집중한다.
 - GitHub Copilot **cloud agent는 future target**이며, `handoffs`·`web`·`todo`·hooks 동작 차이가 있으므로 별도 검증 전에는 동일 동작을 보장하지 않는다(상세: [docs/02 §3.1](docs/02-ghcp-harness-design.md)).
 - 기계적 강제는 **로컬 Agent hooks Preview**에 의존한다. 기능 비활성 환경에서는 hook이 선언적 정책으로만 작동하고 자동 차단은 일어나지 않는다.
 - **CI 하네스**(harness-doctor·hook 단위 테스트·스모크)는 [.github/workflows/harness-ci.yml](.github/workflows/harness-ci.yml)로 push·PR마다 원격 강제된다(로컬 Agent hooks Preview 의존을 보완). 다만 GitHub Copilot **cloud agent의 원격 강제**와 sandbox guardrail은 현재 보장하지 않으며, [docs/07-deferred-backlog.md](docs/07-deferred-backlog.md)에 보류 조건을 기록한다.
