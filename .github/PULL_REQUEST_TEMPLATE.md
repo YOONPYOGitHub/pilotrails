@@ -18,7 +18,7 @@
 
 ## 검증 증거
 - [ ] `node scripts/harness-doctor.mjs`
-- [ ] `node --test tests/`
+- [ ] `node --test tests/*.test.mjs`
 - [ ] `node scripts/smoke.mjs`
 - [ ] 수동 GitHub Copilot/VS Code 검증
 - [ ] 해당 없음

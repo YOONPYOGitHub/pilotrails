@@ -64,7 +64,7 @@ hooks가 비활성인 환경에서는 같은 규칙이 지침으로만 작동한
 | 명령 | 확인 내용 |
 | --- | --- |
 | `node scripts/harness-doctor.mjs` | 보호 경로, 문서/구현 정합, 죽은 자산 |
-| `node --test tests/` | hook 순수 로직 단위 테스트 |
+| `node --test tests/*.test.mjs` | hook 순수 로직 단위 테스트 |
 | `node scripts/smoke.mjs` | `sandbox/*` 검증 앱 테스트 |
 
 자세한 실행 순서는 [08-run-harness.md](08-run-harness.md)를 본다.

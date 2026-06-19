@@ -30,7 +30,7 @@ PilotRails는 GitHub Copilot용 **정책 하네스**다. 실행 런타임이 아
 
 - 접수 확인: 영업일 기준 합리적 시일 내
 - 수정 우선순위: 보호 경로 우회·CI 비밀 노출·임의 코드 실행을 최우선으로 다룬다.
-- 수정은 검증 통과(`node scripts/harness-doctor.mjs`, `node --test tests/`, `node scripts/smoke.mjs`) 후 머지한다.
+- 수정은 검증 통과(`node scripts/harness-doctor.mjs`, `node --test tests/*.test.mjs`, `node scripts/smoke.mjs`) 후 머지한다.
 
 ## 범위 밖
 

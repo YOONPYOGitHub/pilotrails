@@ -61,7 +61,7 @@ feature_list.json  # PilotRails 정책 자산 상태 정본
 
 ```bash
 node scripts/harness-doctor.mjs
-node --test tests/
+node --test tests/*.test.mjs
 node scripts/smoke.mjs
 ```
 

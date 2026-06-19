@@ -38,7 +38,7 @@ jobs:
         run: node scripts/harness-doctor.mjs
 
       - name: Hook unit tests
-        run: node --test tests/
+        run: node --test tests/*.test.mjs
 
       - name: Install sandbox app deps
         run: |
