@@ -24,11 +24,14 @@ node --test tests/                # 기대: hook 단위 테스트 통과
 
 ## 문서
 
+**기능 먼저** — 이 하네스가 지금 무엇을 하는지부터 본다. 아래 설계·리서치 문서는 *왜 그렇게 만들었는지*에 대한 배경 자료다.
+
 | 문서 | 내용 |
 | --- | --- |
-| [docs/01-harness-research.md](docs/01-harness-research.md) | 하네스 정의(narrow=eval vs broad=런타임), 인기 하네스 Star·아키텍처·강점 분석(런타임·eval·라우팅·CI 계열) 및 베스트 아이디어 종합·학습 순서 |
-| [docs/02-ghcp-harness-design.md](docs/02-ghcp-harness-design.md) | 위 강점을 GHCP 커스터마이징 레이어로 재현하는 설계 청사진(모드 분리·서브에이전트·검증 루프·메모리·라우팅) |
-| [docs/03-synergy-conflict-design.md](docs/03-synergy-conflict-design.md) | 아이디어 **조합**의 시너지/상충 분석 — 6개 텐션 축, 상충 매트릭스, 코딩에 멀티에이전트·중간 모델전환 비채택 결론, 다이얼 기본 구성 |
+| [docs/00-harness-features.md](docs/00-harness-features.md) | **기능 레퍼런스(현재 동작 기준)** — 모드 분리·검증 루프·Agent hooks·보호 경로·상태 거버넌스·메모리·자기 진단 |
+| [docs/01-harness-research.md](docs/01-harness-research.md) | (배경) 하네스 정의(narrow=eval vs broad=런타임)와 외부 하네스 아키텍처·강점 리서치 |
+| [docs/02-ghcp-harness-design.md](docs/02-ghcp-harness-design.md) | (배경) 위 강점을 GHCP 커스터마이징 레이어로 재현하는 설계 청사진(모드 분리·서브에이전트·검증 루프·메모리·라우팅) |
+| [docs/03-synergy-conflict-design.md](docs/03-synergy-conflict-design.md) | (배경) 아이디어 **조합**의 시너지/상충 분석 — 6개 텐션 축, 상충 매트릭스, 코딩에 멀티에이전트·중간 모델전환 비채택 결론, 다이얼 기본 구성 |
 | [docs/04-operational-validation.md](docs/04-operational-validation.md) | 실제 VS Code/Copilot에서 에이전트·지침·스킬이 로드·동작하는지 확인하는 수동 운영 검증 체크리스트 |
 | [docs/05-decision-log.md](docs/05-decision-log.md) | 외부 피드백의 채택·기각·보류 결정 로그(근거 포함) |
 | [docs/06-harness-operating-plan.md](docs/06-harness-operating-plan.md) | 하네스를 **잘 작동시키는** 운영·진화 규율 — 스티어링 루프, 컴포넌트 ablation, 거버넌스 게이트, 의도적 보류와 도입 트리거 |
