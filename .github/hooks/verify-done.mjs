@@ -1,4 +1,4 @@
-// Stop 검증 게이트 — 설계: docs/02 §3.9 규칙 2, C8 강제
+// Stop 검증 게이트 — 설계: docs/02 §5, C8 강제
 // "검증 없는 완료"를 차단한다. 두 가지를 검사한다.
 //  (1) 정규 상태 소스(feature_list.json)가 수정됐는데 커밋되지 않았으면
 //      종료를 막아 /finish(검증→커밋)를 강제한다.
@@ -114,7 +114,7 @@ async function main() {
   const output = {
     decision: "block",
     reason:
-      "feature_list.json에 미커밋 변경이 있습니다. 상태 변경은 /finish로 검증→갱신→커밋을 마친 뒤 종료하세요(docs/02 §3.10). 실제 검증 명령 출력을 인용해 통과시키세요(self-eval 회피).",
+      "feature_list.json에 미커밋 변경이 있습니다. 상태 변경은 /finish로 검증→갱신→커밋을 마친 뒤 종료하세요(docs/02 §3). 실제 검증 명령 출력을 인용해 통과시키세요(self-eval 회피).",
   };
   process.stdout.write(JSON.stringify(output));
   process.exit(0);

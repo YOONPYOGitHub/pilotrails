@@ -1,4 +1,4 @@
-// PreToolUse 보호 경로 가드 — 설계: docs/02 §3.9, docs/03 C13
+// PreToolUse 보호 경로 가드 — 설계: docs/02 §4, docs/03 C13
 // 이 레포는 빌드 러너가 없는 문서·설계 레포이므로, hook 대상은 애플리케이션
 // 코드가 아니라 "하네스 자산 자신"이다(불변 결정·단일 always-on 규칙·정규 상태 소스).
 //
@@ -11,7 +11,7 @@
 //   prefix         — 디렉터리 하위 전체 보호(가드 구현 자신 같은 자산 군)
 //
 // PROTECTED는 scripts/harness-doctor.mjs가 import 하여
-// "문서가 주장하는 보호 경로 ↔ hook이 실제 차단하는 경로" 정합을 검사한다(§3.11).
+// "문서가 주장하는 보호 경로 ↔ hook이 실제 차단하는 경로" 정합을 검사한다.
 
 import { pathToFileURL, fileURLToPath } from "node:url";
 import { dirname, resolve, relative, isAbsolute } from "node:path";
@@ -29,7 +29,7 @@ export const PROTECTED = [
     path: "feature_list.json",
     decision: "deny",
     reason:
-      "feature_list.json은 정규 상태 소스입니다. status 변경은 /finish(.github/prompts/finish.prompt.md) 단일 경로로만 하세요(docs/02 §3.10).",
+      "feature_list.json은 정규 상태 소스입니다. status 변경은 /finish(.github/prompts/finish.prompt.md) 단일 경로로만 하세요(docs/02 §3).",
   },
   {
     path: ".github/copilot-instructions.md",
@@ -64,6 +64,7 @@ export function extractPaths(toolInput = {}) {
     ...(Array.isArray(toolInput.replacements)
       ? toolInput.replacements.map((r) => r && (r.filePath || r.file_path))
       : []),
+    ...extractPatchPaths(toolInput.patch || toolInput.input || toolInput.diff),
   ].filter((v) => typeof v === "string" && v.length > 0);
 
   return candidates.map((p) => {
@@ -71,6 +72,26 @@ export function extractPaths(toolInput = {}) {
     const abs = isAbsolute(cleaned) ? cleaned : resolve(process.cwd(), cleaned);
     return relative(REPO_ROOT, abs).replace(/\\/g, "/");
   });
+}
+
+export function extractPatchPaths(patch) {
+  if (typeof patch !== "string" || patch.length === 0) return [];
+  const paths = [];
+  for (const line of patch.split(/\r?\n/)) {
+    const v4a = line.match(/^\*\*\*\s+(?:Add|Update|Delete) File:\s+(.+)$/);
+    if (v4a) {
+      paths.push(v4a[1].trim());
+      continue;
+    }
+    const git = line.match(/^diff --git a\/(.+?) b\/(.+)$/);
+    if (git) {
+      paths.push(git[1].trim(), git[2].trim());
+      continue;
+    }
+    const marker = line.match(/^(?:---|\+\+\+)\s+(?:a|b)\/(.+)$/);
+    if (marker && marker[1] !== "/dev/null") paths.push(marker[1].trim());
+  }
+  return [...new Set(paths)];
 }
 
 /** 한 경로가 규칙에 매치되는가. prefix 규칙은 디렉터리 하위 전체를 보호한다. */

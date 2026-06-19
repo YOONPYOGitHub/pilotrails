@@ -3,7 +3,6 @@ description: "코드를 수정하지 않고 코드베이스를 이해하고 실�
 name: "Plan"
 tools: [read, search, web, agent]
 agents: [Explore]
-model: ['Claude Sonnet 4.5 (copilot)', 'GPT-5 (copilot)']
 target: vscode
 handoffs:
   - label: "Build 시작"

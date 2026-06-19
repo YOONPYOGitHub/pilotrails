@@ -1,4 +1,4 @@
-<!-- GHCP Harness PR 템플릿 -->
+<!-- PilotRails PR 템플릿 -->
 
 ## 변경 요약
 
@@ -20,7 +20,7 @@
 - [ ] `node scripts/harness-doctor.mjs`
 - [ ] `node --test tests/`
 - [ ] `node scripts/smoke.mjs`
-- [ ] 수동 GHCP/VS Code 검증
+- [ ] 수동 GitHub Copilot/VS Code 검증
 - [ ] 해당 없음
 
 출력 요약:
@@ -35,7 +35,7 @@
 
 ## 보호 경로
 - [ ] 보호 경로(`feature_list.json`, `.github/copilot-instructions.md`, `docs/05-decision-log.md`, `.github/hooks/`)를 건드리지 않았다
-- [ ] 건드렸다면 이유를 위에 명시했고, 새 보호 경로는 `docs/02 §3.9`에 반영했다
+- [ ] 건드렸다면 이유를 위에 명시했고, 새 보호 경로는 `docs/02 §4`에 반영했다
 
 ## 문서/보안
 - [ ] README 또는 관련 문서를 갱신했다

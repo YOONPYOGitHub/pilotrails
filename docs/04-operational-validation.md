@@ -1,6 +1,6 @@
 # 04. 운영 검증 체크리스트 (수동)
 
-이 문서는 [.github/](../.github/)의 하네스 구성이 **실제 VS Code/Copilot에서 의도대로 로드·동작하는지** 사람이 직접 확인하는 절차다. 실행 스크립트가 아니라 **수동 검증 절차**로 유지한다(설계 우선 단계, 검증되지 않은 런타임 코드 미추가 — 근거: [03-synergy-conflict-design.md](03-synergy-conflict-design.md) §6 불변 규칙).
+이 문서는 [.github/](../.github/)의 PilotRails 구성이 **실제 VS Code/Copilot에서 의도대로 로드·동작하는지** 사람이 직접 확인하는 절차다. 실행 스크립트가 아니라 **수동 검증 절차**로 유지한다(설계 우선 단계, 검증되지 않은 런타임 코드 미추가 — 근거: [03-synergy-conflict-design.md](03-synergy-conflict-design.md) §6 불변 규칙).
 
 > 전제: VS Code + GitHub Copilot Chat이 설치되어 있고, 이 저장소를 워크스페이스로 연 상태. 커스텀 에이전트는 워크스페이스의 [.github/agents/](../.github/agents/) 폴더에서 자동 인식된다.
 
@@ -69,7 +69,7 @@ Plan 에이전트로 계획을 완료한 뒤 응답 하단의 handoff 버튼을 
 
 ## G. 기계적 강제 — Hooks·상태·거버넌스 (일부 실행형)
 
-[.github/hooks/](../.github/hooks/)·[feature_list.json](../feature_list.json)·[scripts/harness-doctor.mjs](../scripts/harness-doctor.mjs)는 설계서 [02 §3.9–3.11](02-ghcp-harness-design.md)의 구현이다. 아래 중 **G-1·G-2·G-3은 `node`로 직접 실행 가능**하며(빌드 러너 불필요), 나머지는 VS Code에서 수동 확인한다.
+[.github/hooks/](../.github/hooks/)·[feature_list.json](../feature_list.json)·[scripts/harness-doctor.mjs](../scripts/harness-doctor.mjs)는 설계서 [02 §3–6](02-ghcp-harness-design.md)의 구현이다. 아래 중 **G-1·G-2·G-3은 `node`로 직접 실행 가능**하며(빌드 러너 불필요), 나머지는 VS Code에서 수동 확인한다.
 
 | # | 확인 항목 | 기대 결과 | 방법 | 결과 | 비고 |
 | --- | --- | --- | --- | --- | --- |
@@ -81,6 +81,6 @@ Plan 에이전트로 계획을 완료한 뒤 응답 하단의 handoff 버튼을 
 | 25 | Stop 검증 게이트 | 미커밋 `status` 변경 있을 때 종료 차단, 커밋 후 통과 | feature_list 변경 후 Stop |  |  |
 | 26 | `/finish` 프롬프트 동작 | 검증→상태 갱신→handoff→커밋 순서 안내 | [.github/prompts/finish.prompt.md](../.github/prompts/finish.prompt.md) 호출 |  |  |
 
-> G-4(항목 24·25)는 hooks Preview 기능 활성화가 전제다. 비활성 환경에서는 hook 파일이 **문서·정책**으로만 작동하고 기계적 차단은 일어나지 않는다 — 이 경우 [02 §3.9](02-ghcp-harness-design.md)의 선언적 규칙으로 폴백한다.
+> G-4(항목 24·25)는 hooks Preview 기능 활성화가 전제다. 비활성 환경에서는 hook 파일이 **문서·정책**으로만 작동하고 기계적 차단은 일어나지 않는다 — 이 경우 [02 §4](02-ghcp-harness-design.md)의 선언적 규칙으로 폴백한다.
 
-> 이 체크리스트의 A~F는 자동화 대상이 아니다. G의 실행형 항목(20~22)은 harness-doctor를 통해 CI로 승격할 수 있으며, 이는 [02-ghcp-harness-design.md](02-ghcp-harness-design.md) §7 로드맵 9번(CI 하네스)에서 다룬다.
+> 이 체크리스트의 A~F는 자동화 대상이 아니다. G의 실행형 항목(20~22)은 harness-doctor를 통해 CI로 승격할 수 있으며, 이는 [02-ghcp-harness-design.md](02-ghcp-harness-design.md) §6(CI와 로컬 hooks의 관계)에서 다룬다.

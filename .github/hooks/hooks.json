@@ -1,5 +1,5 @@
 {
-  "$comment": "Agent hooks 등록 설정. 설계: docs/02 §3.9. Claude Code .claude/settings.json hooks 포맷과 호환. 명령은 워크스페이스 루트(cwd) 기준 상대 경로의 node 스크립트.",
+  "$comment": "Agent hooks 등록 설정. 설계: docs/02 §4-5. Claude Code .claude/settings.json hooks 포맷과 호환. 명령은 워크스페이스 루트(cwd) 기준 상대 경로의 node 스크립트.",
   "hooks": {
     "SessionStart": [
       {

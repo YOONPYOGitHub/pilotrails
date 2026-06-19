@@ -1,6 +1,6 @@
-# 하네스 구조와 거버넌스
+# PilotRails 구조와 거버넌스
 
-이 문서는 GHCP Harness의 **현재 구조**를 설명한다. 목표는 새 런타임을 만드는 것이 아니라, VS Code Copilot이 인식하는 `.github/` 자산과 가벼운 Node 스크립트로 작업 흐름을 규율하는 것이다.
+이 문서는 PilotRails의 **현재 구조**를 설명한다. 목표는 새 런타임을 만드는 것이 아니라, VS Code Copilot이 인식하는 `.github/` 자산과 가벼운 Node 스크립트로 작업 흐름을 규율하는 것이다.
 
 ## 1. 구성 개요
 
@@ -14,7 +14,7 @@
   workflows/       # CI, CodeQL
 scripts/           # doctor, smoke
 tests/             # hook 순수 로직 테스트
-feature_list.json  # 하네스 정책 자산 상태 정본
+feature_list.json  # PilotRails 정책 자산 상태 정본
 ```
 
 ## 2. 작업 흐름
@@ -32,7 +32,7 @@ feature_list.json  # 하네스 정책 자산 상태 정본
 
 ## 3. 상태 정본
 
-[feature_list.json](../feature_list.json)은 하네스 정책 자산의 상태를 담는 단일 정본이다. `status` 변경은 [/finish](../.github/prompts/finish.prompt.md)를 통해서만 수행한다.
+[feature_list.json](../feature_list.json)은 PilotRails 정책 자산의 상태를 담는 단일 정본이다. `status` 변경은 [/finish](../.github/prompts/finish.prompt.md)를 통해서만 수행한다.
 
 이 규칙은 상태 드리프트를 막기 위한 것이다. 문서나 대화에는 계획을 적을 수 있지만, 완료 상태는 하나의 파일과 하나의 경로로만 바꾼다.
 

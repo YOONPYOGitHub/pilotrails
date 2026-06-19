@@ -1,6 +1,6 @@
 # 기여 가이드 (Contributing)
 
-이 저장소는 GitHub Copilot용 **정책 하네스**다. 기여는 "더 많은 기능"보다 **관찰된 마찰을 줄이는 최소 변경**을 지향한다(근거: [docs/06](docs/06-harness-operating-plan.md) — 관찰된 실패에서 하네스가 나온다).
+PilotRails는 GitHub Copilot용 **정책 하네스**다. 기여는 "더 많은 기능"보다 **관찰된 마찰을 줄이는 최소 변경**을 지향한다(근거: [docs/06](docs/06-harness-operating-plan.md) — 관찰된 실패에서 PilotRails가 나온다).
 
 ## 시작하기
 
@@ -33,7 +33,7 @@ node --test tests/                # 전부 pass
 node scripts/smoke.mjs            # 샌드박스 앱 통과(또는 건너뜀)
 ```
 
-> 보호 경로를 새로 추가하면 그 경로 문자열이 [docs/02 §3.9](docs/02-ghcp-harness-design.md)에 명시돼 있어야 `harness-doctor`가 통과한다(문서↔훅 정합).
+> 보호 경로를 새로 추가하면 그 경로 문자열이 [docs/02 §4](docs/02-ghcp-harness-design.md)에 명시돼 있어야 `harness-doctor`가 통과한다(문서↔훅 정합).
 
 ## 커밋·PR
 

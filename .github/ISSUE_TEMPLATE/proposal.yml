@@ -6,8 +6,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        이 하네스는 **관찰된 실패에만 장치를 추가**합니다([docs/06](../docs/06-harness-operating-plan.md)).
-        제안이 추측성이면 [docs/07-deferred-backlog.md](../docs/07-deferred-backlog.md)에 도입 트리거와 함께 기록될 수 있습니다.
+        PilotRails는 **관찰된 실패에만 장치를 추가**합니다([docs/06](../../docs/06-harness-operating-plan.md)).
+        제안이 추측성이면 [docs/07-deferred-backlog.md](../../docs/07-deferred-backlog.md)에 도입 트리거와 함께 기록될 수 있습니다.
   - type: textarea
     id: problem
     attributes:

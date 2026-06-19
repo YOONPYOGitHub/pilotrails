@@ -1,4 +1,4 @@
-// PreCompact handoff 덤프 — 설계: docs/02 §3.9, C2 보강
+// PreCompact handoff 덤프 — 설계: docs/02 §5, C2 보강
 // 컨텍스트 압축 직전, load-bearing 컨텍스트(현재 diff·최근 테스트/에러 출력·활성
 // 파일·현재 계획)를 보존하라는 handoff 안내와 미커밋 파일 목록을 주입한다(비차단).
 

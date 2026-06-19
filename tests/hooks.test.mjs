@@ -1,4 +1,4 @@
-// hook 순수 로직 단위 테스트 — 설계: docs/02 §3.9, docs/04 G.
+// hook 순수 로직 단위 테스트 — 설계: docs/02 §4-5, docs/04 G.
 // 가드의 핵심 결정 로직(보호 경로 평가·문서 링크 검사)을 결정론적으로 검증한다.
 // 의존성 없이 `node --test tests/`로 실행(이 레포는 빌드 러너가 없는 문서 레포).
 // git 상태에 의존하는 함수(verify-done의 uncommittedStatusChange 등)는
@@ -11,7 +11,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { evaluate, extractPaths } from "../.github/hooks/protect-paths.mjs";
-import { checkMarkdown } from "../.github/hooks/validate-docs.mjs";
+import { checkMarkdown, extractMarkdownPaths } from "../.github/hooks/validate-docs.mjs";
 
 // --- protect-paths: 보호 경로 평가 ---
 
@@ -50,6 +50,14 @@ test("다중 경로에서 deny가 ask보다 강함", () => {
   assert.equal(rule?.decision, "deny");
 });
 
+test("apply_patch 패치 본문에서 보호 경로를 추출한다", () => {
+  const paths = extractPaths({
+    patch: "*** Begin Patch\n*** Update File: feature_list.json\n@@\n*** End Patch",
+  });
+  assert.deepEqual(paths, ["feature_list.json"]);
+  assert.equal(evaluate(paths)?.decision, "deny");
+});
+
 // --- validate-docs: 깨진 상대 링크 검사 ---
 
 test("깨진 상대 링크를 감지한다", () => {
@@ -75,4 +83,15 @@ test("외부·앵커 링크는 무시한다", () => {
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("MultiEdit replacements에서 수정된 마크다운 파일을 추출한다", () => {
+  const paths = extractMarkdownPaths({
+    replacements: [
+      { filePath: "README.md" },
+      { file_path: "docs/00-harness-features.md" },
+      { filePath: "scripts/harness-doctor.mjs" },
+    ],
+  });
+  assert.deepEqual(paths, ["README.md", "docs/00-harness-features.md"]);
 });

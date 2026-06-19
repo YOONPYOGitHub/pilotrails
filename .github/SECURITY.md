@@ -1,6 +1,6 @@
 # 보안 정책 (Security Policy)
 
-이 저장소는 GitHub Copilot용 **정책 하네스**다. 실행 런타임이 아니라 `.github/` 커스터마이제이션·검사 스크립트·dogfood 샌드박스 앱으로 구성된다. 따라서 보안 표면은 주로 다음에 한정된다.
+PilotRails는 GitHub Copilot용 **정책 하네스**다. 실행 런타임이 아니라 `.github/` 커스터마이제이션·검사 스크립트·dogfood 샌드박스 앱으로 구성된다. 따라서 보안 표면은 주로 다음에 한정된다.
 
 - `.github/hooks/*.mjs` 및 `scripts/*.mjs` — 로컬에서 `node`로 실행되는 거버넌스 스크립트
 - `sandbox/*` — 검증용 예제 앱(외부 노출 의도 없음)

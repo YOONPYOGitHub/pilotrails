@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 하네스 거버넌스 검사 — 설계: docs/02 §3.11 (wikidocs 원칙 6)
+// 하네스 거버넌스 검사 — 설계: docs/02 §4-6 (wikidocs 원칙 6)
 // "하네스 자신의 드리프트"를 센서로 막는다. 빌드 러너 없이 node로 실행·검증 가능.
 //
 //   1) 문서가 주장하는 보호 경로 ↔ hook이 실제 차단하는 경로 일치
@@ -26,8 +26,26 @@ function read(p) {
   return readFileSync(resolve(ROOT, p), "utf8");
 }
 
+function hookCommandsFor(hooksConfig, eventName) {
+  const entries = hooksConfig.hooks?.[eventName] || [];
+  return entries.flatMap((entry) =>
+    (entry.hooks || []).map((hook) => ({
+      matcher: entry.matcher || "",
+      command: hook.command || "",
+    })),
+  );
+}
+
+function hasHookCommand(hooksConfig, eventName, scriptName, matcherPattern) {
+  return hookCommandsFor(hooksConfig, eventName).some(
+    (hook) =>
+      hook.command.includes(scriptName) &&
+      (!matcherPattern || matcherPattern.test(hook.matcher)),
+  );
+}
+
 // 워크스페이스 내 모든 .md/.json/.mjs 텍스트를 한 번 모아 참조 검색에 쓴다.
-function collectText(dir, acc = { files: [], blob: "" }) {
+function collectText(dir, acc = { files: [], blob: "", entries: [] }) {
   for (const name of readdirSync(dir)) {
     if (name === ".git" || name === "node_modules") continue;
     const full = join(dir, name);
@@ -35,7 +53,9 @@ function collectText(dir, acc = { files: [], blob: "" }) {
     if (st.isDirectory()) collectText(full, acc);
     else if (/\.(md|json|mjs)$/.test(name)) {
       acc.files.push(full);
-      acc.blob += "\n" + readFileSync(full, "utf8");
+      const text = readFileSync(full, "utf8");
+      acc.entries.push({ path: relative(ROOT, full).replace(/\\/g, "/"), text });
+      acc.blob += "\n" + text;
     }
   }
   return acc;
@@ -45,10 +65,10 @@ function collectText(dir, acc = { files: [], blob: "" }) {
 async function checkProtectedPaths() {
   const { PROTECTED } = await import("../.github/hooks/protect-paths.mjs");
   const design = read("docs/02-ghcp-harness-design.md");
-  const hooksJson = read(".github/hooks/hooks.json");
+  const hooksConfig = JSON.parse(read(".github/hooks/hooks.json"));
 
-  if (!/protect-paths\.mjs/.test(hooksJson))
-    fail("hooks.json이 PreToolUse에 protect-paths.mjs를 배선하지 않음");
+  if (!hasHookCommand(hooksConfig, "PreToolUse", "protect-paths.mjs", /apply_patch/))
+    fail("hooks.json이 PreToolUse에 protect-paths.mjs를 쓰기 matcher와 함께 배선하지 않음");
   else ok("protect-paths.mjs가 hooks.json에 배선됨");
 
   for (const rule of PROTECTED) {
@@ -68,8 +88,16 @@ function checkCounts() {
     fail("feature_list.json에 features 배열 없음");
     return list;
   }
+  const allowedStatuses = new Set(list.statuses || []);
+  const featureIds = new Set(list.features.map((f) => f.id));
   // 모든 feature.path 존재
   for (const f of list.features) {
+    if (!f.id) fail("feature_list 항목 id 없음");
+    if (!allowedStatuses.has(f.status))
+      fail(`feature_list status 허용값 아님: ${f.id} → ${f.status}`);
+    for (const dep of f.deps || []) {
+      if (!featureIds.has(dep)) fail(`feature_list deps 대상 없음: ${f.id} → ${dep}`);
+    }
     if (!f.path || !existsSync(resolve(ROOT, f.path)))
       fail(`feature_list 항목 경로 없음: ${f.id} → ${f.path}`);
   }
@@ -93,24 +121,36 @@ function checkCounts() {
 
 // --- 3. 죽은 자산 탐지 ---
 function checkDeadAssets(list) {
-  const { blob } = collectText(ROOT);
-  const hooksJson = read(".github/hooks/hooks.json");
+  const collected = collectText(ROOT);
+  const hooksConfig = JSON.parse(read(".github/hooks/hooks.json"));
 
   // 모든 hook 스크립트가 hooks.json에 배선
   const hookDir = resolve(ROOT, ".github/hooks");
   for (const name of readdirSync(hookDir).filter((n) => n.endsWith(".mjs"))) {
-    if (!hooksJson.includes(name))
+    const wired = Object.keys(hooksConfig.hooks || {}).some((eventName) =>
+      hookCommandsFor(hooksConfig, eventName).some((hook) => hook.command.includes(name)),
+    );
+    if (!wired)
       fail(`죽은 hook(배선 안 됨): .github/hooks/${name}`);
   }
+
+  if (!hasHookCommand(hooksConfig, "PostToolUse", "validate-docs.mjs", /apply_patch/))
+    fail("hooks.json이 PostToolUse에 validate-docs.mjs를 쓰기 matcher와 함께 배선하지 않음");
+  if (!hasHookCommand(hooksConfig, "Stop", "verify-done.mjs"))
+    fail("hooks.json이 Stop에 verify-done.mjs를 배선하지 않음");
 
   // 모든 feature.path가 자기 자신 외 어딘가에서 참조됨
   for (const f of list.features) {
     if (!f.path) continue;
     const base = f.path.split("/").pop();
-    // 참조 카운트: 파일명이 blob에 2회 이상(자기 정의 + 최소 1회 참조) 또는
-    // 디렉터리형 자산은 경로가 문서에 등장
-    const count = blob.split(base).length - 1;
-    const referenced = blob.includes(f.path) || count >= 2;
+    const searchBlob = collected.entries
+      .filter((entry) => entry.path !== "feature_list.json" && entry.path !== f.path)
+      .map((entry) => entry.text)
+      .join("\n");
+    // 참조 카운트: feature_list 자기 정의와 파일 자체를 제외한 문서/배선에서
+    // 전체 경로 또는 파일명이 최소 1회 등장해야 한다.
+    const count = searchBlob.split(base).length - 1;
+    const referenced = searchBlob.includes(f.path) || count >= 1;
     if (!referenced) fail(`죽은 자산(참조 없음): ${f.id} → ${f.path}`);
   }
   ok(`자산 ${list.features.length}개 배선·참조 검사 완료`);

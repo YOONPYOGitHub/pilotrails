@@ -2,7 +2,7 @@
 
 [../scenarios.md](../scenarios.md)의 드라이런 시나리오를 나중에 **실행 가능한 평가 매니페스트**(YAML/JSON)로 옮기기 위한 자리. 지금은 로드맵 문서만 둔다.
 
-> 현재 단계에서는 **실행형 benchmark runner를 만들지 않는다**. 설계 우선 단계이고, 검증되지 않은 런타임 코드는 하네스 설계를 불안정하게 만들 수 있기 때문이다(근거: [docs/05-decision-log.md](../../docs/05-decision-log.md) 보류 항목).
+> 현재 단계에서는 **실행형 평가 runner를 만들지 않는다**. 설계 우선 단계이고, 검증되지 않은 런타임 코드는 PilotRails 설계를 불안정하게 만들 수 있기 때문이다(근거: [docs/05-decision-log.md](../../docs/05-decision-log.md) 보류 항목).
 
 ## 목표
 
@@ -34,6 +34,6 @@ metrics: [test_pass, diff_size, self_fix_attempts, new_failures_introduced]
 
 ## 보류 (이번 단계 미수행)
 
-- 실행형 benchmark runner / 채점기
-- GitHub Actions 연동 (→ [docs/02 §7](../../docs/02-ghcp-harness-design.md) 로드맵)
+- 실행형 평가 runner / 채점기
+- 평가 runner 전용 GitHub Actions 연동(현재 CI 검증과 별개)
 - 시나리오의 실제 YAML/JSON 매니페스트 파일 추가

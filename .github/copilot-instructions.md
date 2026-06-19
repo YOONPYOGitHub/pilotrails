@@ -1,6 +1,6 @@
-# GHCP Harness — 전역 규칙 (단일 always-on)
+# PilotRails — 전역 규칙 (단일 always-on)
 
-이 저장소는 GitHub Copilot 코딩 에이전트 하네스의 **설계와 구현**이다. 설계 근거는 [docs/](../docs/)에 있다.
+이 저장소는 PilotRails의 **설계와 구현**이다. GitHub Copilot 코딩 에이전트 하네스로서의 설계 근거는 [docs/](../docs/)에 있다.
 이 파일은 **항상 로드**되므로 **변하지 않는 최소 불변 규칙**만 담는다. 계획·진행상태 같은 휘발성 메모는 여기 넣지 않는다(세션·PR·스크래치로).
 
 ## 불변 규칙 (모드 무관)
@@ -12,13 +12,13 @@
 5. **커밋은 검증 통과 마일스톤에서만.** green 상태가 곧 롤백 지점이다. (C9)
 6. **위험 등급제.** 가역·저영향(파일 편집, 읽기, 테스트 실행)은 자율 진행. **비가역·공유 영향**(push, `--force`, `reset --hard`, 파일/브랜치 삭제, 인프라 변경, 비밀 취급)은 항상 사용자 승인. (C1)
 7. **기계적 강제는 관찰된 실패에만, 감지 ≠ 자동 실행.** 선언한 규칙 중 일부는 [.github/hooks/](hooks/)가 강제한다(PreToolUse 보호 경로 차단·Stop 검증 게이트). hook은 **관찰된 실패에서만** 추가하고, 부수효과 큰 작업은 알림만 하며 실행은 사람이 확인한다. (P9 / docs/03 C13)
-8. **상태는 단일 경로로만 변경.** 정규 상태 소스는 [feature_list.json](../feature_list.json)이고, `status` 변경은 [/finish](prompts/finish.prompt.md) 하나로만 한다. 직접 편집은 PreToolUse 가드가 차단한다. (docs/02 §3.10)
+8. **상태는 단일 경로로만 변경.** 정규 상태 소스는 [feature_list.json](../feature_list.json)이고, `status` 변경은 [/finish](prompts/finish.prompt.md) 하나로만 한다. 직접 편집은 PreToolUse 가드가 차단한다. (docs/02 §3)
 
 ## 검증의 정의 (완료 기준)
 
 "컴파일된다"가 아니라 **(1) 변경을 diff로 명확히 하고 (2) 관련 테스트를 실제로 돌려 통과**해야 완료다. 테스트가 없으면 `재현 → 수정 → 회귀 방지 테스트 추가`. (docs/02 §3.6)
 
-검증 명령은 **락파일로 추론**한다(`pnpm-lock.yaml`→pnpm, `yarn.lock`→yarn, `package-lock.json`→npm). 명령을 모르면 추측하지 말고 확인·기록한다. 이 저장소 자체는 빌드·테스트 러너가 없는 **문서·설계 레포**이므로, 문서 변경은 링크·표 포맷·명령 일치로 검증하고, 하네스 자산을 바꿨으면 [scripts/harness-doctor.mjs](../scripts/harness-doctor.mjs)를 `node`로 돌려 거버넌스 정합을 확인한다.
+검증 명령은 **락파일로 추론**한다(`pnpm-lock.yaml`→pnpm, `yarn.lock`→yarn, `package-lock.json`→npm). 명령을 모르면 추측하지 말고 확인·기록한다. 이 저장소 자체는 빌드·테스트 러너가 없는 **문서·설계 레포**이므로, 문서 변경은 링크·표 포맷·명령 일치로 검증하고, PilotRails 자산을 바꿨으면 [scripts/harness-doctor.mjs](../scripts/harness-doctor.mjs)를 `node`로 돌려 거버넌스 정합을 확인한다.
 
 **self-eval 회피**: 완료 판단은 LLM 자기확신이 아니라 **실제 명령 출력**(테스트 로그·링크검사·harness-doctor 출력)을 인용해서만 내린다.
 

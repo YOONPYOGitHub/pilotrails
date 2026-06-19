@@ -1,5 +1,3 @@
-# CodeQL 정적 분석 — JS/TS 보안·품질 검사.
-# 설계: docs/07 보안 기본선. 공개 OSS 위생의 저비용 개선.
 name: codeql
 
 on:

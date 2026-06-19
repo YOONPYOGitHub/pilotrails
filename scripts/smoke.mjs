@@ -6,7 +6,7 @@
 // 통과 시 exit 0, 하나라도 실패하면 exit 1.
 // node_modules가 없는 앱은 "건너뜀"으로 보고하고 실패 처리하지 않는다(로컬 미설치 허용).
 
-import { readdirSync, existsSync, statSync } from "node:fs";
+import { readdirSync, existsSync, statSync, readFileSync } from "node:fs";
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
@@ -33,9 +33,13 @@ for (const app of findApps()) {
     skipped++;
     continue;
   }
-  process.stdout.write(`  • ${name} test … `);
+  const label = hasScript(app, "typecheck") ? "test+typecheck" : "test";
+  process.stdout.write(`  • ${name} ${label} … `);
   try {
     execFileSync("npm", ["test", "--silent"], { cwd: app, stdio: "pipe" });
+    if (hasScript(app, "typecheck")) {
+      execFileSync("npm", ["run", "typecheck", "--silent"], { cwd: app, stdio: "pipe" });
+    }
     console.log("✓");
     ran++;
   } catch (err) {
@@ -43,6 +47,15 @@ for (const app of findApps()) {
     const out = `${err.stdout || ""}${err.stderr || ""}`.trim();
     if (out) console.log(out.split("\n").slice(-15).map((l) => "      " + l).join("\n"));
     failed++;
+  }
+}
+
+function hasScript(app, scriptName) {
+  try {
+    const pkg = JSON.parse(readFileSync(join(app, "package.json"), "utf8"));
+    return Boolean(pkg.scripts && pkg.scripts[scriptName]);
+  } catch {
+    return false;
   }
 }
 

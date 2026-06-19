@@ -1,4 +1,4 @@
-// SessionStart · UserPromptSubmit 컨텍스트 주입 — 설계: docs/02 §3.9
+// SessionStart · UserPromptSubmit 컨텍스트 주입 — 설계: docs/02 §3
 // 세션 시작/프롬프트 제출 시 feature_list.json의 진행 중·미착수 항목 요약을
 // additionalContext로 주입한다(비차단). load-bearing 컨텍스트는 건드리지 않는다.
 

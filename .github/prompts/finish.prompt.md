@@ -5,7 +5,7 @@ description: 작업 완료 단일 경로 — 검증 → feature_list.json 상태
 
 # /finish — 완료 단일 경로
 
-이 프롬프트는 [feature_list.json](../../feature_list.json)의 `status`를 바꾸는 **유일한 경로**다(설계: [docs/02 §3.10](../../docs/02-ghcp-harness-design.md)). 직접 `status`를 편집하지 말 것 — `PreToolUse` 가드가 `feature_list.json` 직접 편집을 차단한다.
+이 프롬프트는 [feature_list.json](../../feature_list.json)의 `status`를 바꾸는 **유일한 경로**다(설계: [docs/02 §3](../../docs/02-ghcp-harness-design.md)). 직접 `status`를 편집하지 말 것 — `PreToolUse` 가드가 `feature_list.json` 직접 편집을 차단한다.
 
 아래 순서를 **그대로** 따른다. 각 단계는 앞 단계의 **실제 출력**을 근거로만 통과시킨다(self-eval 회피 — LLM 자기확신 금지).
 

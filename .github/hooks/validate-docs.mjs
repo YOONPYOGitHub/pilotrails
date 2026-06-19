@@ -1,4 +1,4 @@
-// PostToolUse 문서 포맷 검사 — 설계: docs/02 §3.9, docs/03 C13
+// PostToolUse 문서 포맷 검사 — 설계: docs/02 §4, docs/03 C13
 // 편집된 .md 파일의 깨진 상대 링크만 비차단 경고로 알린다.
 // 고신호 검사 하나만 둔다 — over-firing→알림 피로는 C13이 경고하는 안티패턴이다
 // (백틱 파일참조 같은 저신호 휴리스틱은 의도적으로 두지 않는다). 차단하지 않는다.
@@ -31,6 +31,42 @@ export function checkMarkdown(filePath) {
   return warnings;
 }
 
+function extractPatchPaths(patch) {
+  if (typeof patch !== "string" || patch.length === 0) return [];
+  const paths = [];
+  for (const line of patch.split(/\r?\n/)) {
+    const v4a = line.match(/^\*\*\*\s+(?:Add|Update|Delete) File:\s+(.+)$/);
+    if (v4a) {
+      paths.push(v4a[1].trim());
+      continue;
+    }
+    const git = line.match(/^diff --git a\/(.+?) b\/(.+)$/);
+    if (git) {
+      paths.push(git[1].trim(), git[2].trim());
+      continue;
+    }
+    const marker = line.match(/^(?:---|\+\+\+)\s+(?:a|b)\/(.+)$/);
+    if (marker && marker[1] !== "/dev/null") paths.push(marker[1].trim());
+  }
+  return paths;
+}
+
+export function extractMarkdownPaths(toolInput = {}) {
+  const candidates = [
+    toolInput.file_path,
+    toolInput.filePath,
+    toolInput.path,
+    ...(Array.isArray(toolInput.replacements)
+      ? toolInput.replacements.map((r) => r && (r.filePath || r.file_path))
+      : []),
+    ...extractPatchPaths(toolInput.patch || toolInput.input || toolInput.diff),
+  ].filter((v) => typeof v === "string" && v.length > 0);
+
+  return [...new Set(candidates.map((p) => p.replace(/\\/g, "/")))].filter((p) =>
+    /\.md$/i.test(p),
+  );
+}
+
 function readStdin() {
   return new Promise((resolve) => {
     let data = "";
@@ -58,17 +94,20 @@ async function main() {
   }
 
   const input = event.tool_input || event.toolInput || {};
-  const file = input.file_path || input.filePath || input.path;
-  if (!file || !/\.md$/i.test(file)) process.exit(0);
+  const files = extractMarkdownPaths(input);
+  if (files.length === 0) process.exit(0);
 
-  const warnings = checkMarkdown(file);
+  const warnings = [];
+  for (const file of files) {
+    warnings.push(...checkMarkdown(file).map((warning) => `${file}: ${warning}`));
+  }
   if (warnings.length === 0) process.exit(0);
 
   const output = {
     hookSpecificOutput: {
       hookEventName: "PostToolUse",
       additionalContext:
-        `문서 포맷 경고(${file}):\n- ` + warnings.join("\n- "),
+        `문서 포맷 경고:\n- ` + warnings.join("\n- "),
     },
   };
   process.stdout.write(JSON.stringify(output));

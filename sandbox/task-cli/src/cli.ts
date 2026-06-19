@@ -35,16 +35,17 @@ function parseId(raw: string | undefined): number {
 
 export function run(argv: string[]): { code: number; out: string } {
   const [cmd, ...rest] = argv;
-  const store = loadStore(DATA_PATH);
 
   switch (cmd) {
     case "add": {
+      const store = loadStore(DATA_PATH);
       const title = rest.join(" ");
       const task = store.add(title);
       saveStore(DATA_PATH, store);
       return { code: 0, out: `추가됨: ${render(task)}` };
     }
     case "list": {
+      const store = loadStore(DATA_PATH);
       const filter = (rest[0] ?? "all") as Filter;
       if (!["all", "active", "done"].includes(filter)) {
         return { code: 1, out: `알 수 없는 filter: ${filter}` };
@@ -54,11 +55,13 @@ export function run(argv: string[]): { code: number; out: string } {
       return { code: 0, out: tasks.map(render).join("\n") };
     }
     case "done": {
+      const store = loadStore(DATA_PATH);
       const task = store.complete(parseId(rest[0]));
       saveStore(DATA_PATH, store);
       return { code: 0, out: `완료: ${render(task)}` };
     }
     case "rm": {
+      const store = loadStore(DATA_PATH);
       const task = store.remove(parseId(rest[0]));
       saveStore(DATA_PATH, store);
       return { code: 0, out: `삭제됨: ${render(task)}` };

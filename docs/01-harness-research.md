@@ -1,6 +1,6 @@
-# 배경 아카이브: 하네스 설계 리서치
+# 배경 아카이브: PilotRails 설계 리서치
 
-이 문서는 GHCP Harness를 설계할 때 정리한 **문제 공간과 설계 패턴**을 기록한다. 공개 사용자에게 필요한 기능 설명은 [00-harness-features.md](00-harness-features.md), 실행 방법은 [08-run-harness.md](08-run-harness.md)를 먼저 본다.
+이 문서는 PilotRails를 설계할 때 정리한 **문제 공간과 설계 패턴**을 기록한다. 공개 사용자에게 필요한 기능 설명은 [00-harness-features.md](00-harness-features.md), 실행 방법은 [08-run-harness.md](08-run-harness.md)를 먼저 본다.
 
 ## 1. 하네스란 무엇인가
 
@@ -17,9 +17,9 @@
 
 ## 2. 참고한 설계 패턴
 
-GHCP/VS Code가 이미 제공하는 커스터마이징 표면으로 옮길 수 있는 패턴을 정리했다.
+GitHub Copilot/VS Code가 이미 제공하는 커스터마이징 표면으로 옮길 수 있는 패턴을 정리했다.
 
-| 패턴 | 이 하네스에서의 표현 |
+| 패턴 | PilotRails에서의 표현 |
 | --- | --- |
 | 탐색과 구현 분리 | Plan / Build 에이전트 분리 |
 | 최소 도구 권한 | `tools` allowlist와 read-only Explore |

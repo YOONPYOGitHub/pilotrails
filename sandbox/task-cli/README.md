@@ -1,6 +1,6 @@
 # task-cli
 
-GHCP 하네스 **검증용 dogfood 앱**. 간단한 할 일(Task) 관리 CLI다. 이 앱의 목적은 기능 자체가 아니라, 하네스를 실제 구현 작업에 적용해 동작·마찰을 관찰하는 것이다([세션 저널](HARNESS-SESSION-LOG.md), [docs/06](../../docs/06-harness-operating-plan.md)).
+PilotRails **검증용 dogfood 앱**. 간단한 할 일(Task) 관리 CLI다. 이 앱의 목적은 기능 자체가 아니라, PilotRails를 실제 구현 작업에 적용해 동작·마찰을 관찰하는 것이다([세션 저널](HARNESS-SESSION-LOG.md), [docs/06](../../docs/06-harness-operating-plan.md)).
 
 ## 구조
 
@@ -9,7 +9,7 @@ GHCP 하네스 **검증용 dogfood 앱**. 간단한 할 일(Task) 관리 CLI다.
 | [src/store.ts](src/store.ts) | Task 도메인 코어(순수 로직, I/O 없음) |
 | [src/persist.ts](src/persist.ts) | JSON 파일 영속화 어댑터 |
 | [src/cli.ts](src/cli.ts) | argv 파서·명령 디스패치 |
-| [test/store.test.ts](test/store.test.ts) | vitest 단위 테스트 |
+| [test/store.test.ts](test/store.test.ts) · [test/cli.test.ts](test/cli.test.ts) | vitest 단위 테스트 |
 | [feature_list.json](feature_list.json) | 앱 자체 기능 레지스트리(하네스 상태패턴 dogfood) |
 
 ## 사용
@@ -27,4 +27,4 @@ node --import tsx src/cli.ts rm 1
 
 ## 검증 명령
 
-- `npm test` — 단위 테스트(현재 8 passed).
+- `npm test` — 단위 테스트(현재 9 passed).

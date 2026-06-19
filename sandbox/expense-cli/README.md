@@ -1,6 +1,6 @@
 # expense-cli
 
-하네스 dogfood 검증용 **가계부(Expense) CLI**. TypeScript + vitest, ESM. 순수 도메인(`store`)과 I/O 어댑터(`persist`)·진입점(`cli`)을 분리한다.
+PilotRails dogfood 검증용 **가계부(Expense) CLI**. TypeScript + vitest, ESM. 순수 도메인(`store`)과 I/O 어댑터(`persist`)·진입점(`cli`)을 분리한다.
 
 ## 구조
 

@@ -1,12 +1,12 @@
 name: Bug report
-description: GHCP Harness 동작 이상 제보
+description: PilotRails 동작 이상 제보
 title: "[bug] "
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        하네스는 정책 레이어이므로 **어느 표면·어느 에이전트·어느 훅·Preview 상태**에서 났는지가 가장 중요합니다.
+        PilotRails는 정책 레이어이므로 **어느 표면·어느 에이전트·어느 훅·Preview 상태**에서 났는지가 가장 중요합니다.
   - type: dropdown
     id: surface
     attributes:

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "version": 1,
-  "description": "task-cli 기능 레지스트리. 하네스의 상태-소스 패턴(docs/02 §3.10)을 하위 프로젝트에서 dogfood. 이 파일은 루트 하네스의 정규 상태 소스가 아니며, /finish 단일 경로 강제 대상이 아니다.",
+  "description": "task-cli 기능 레지스트리. PilotRails의 상태 정본 패턴(docs/02 §3)을 하위 프로젝트에서 dogfood. 이 파일은 루트 하네스의 정규 상태 소스가 아니며, /finish 단일 경로 강제 대상이 아니다.",
   "statuses": ["not-started", "in-progress", "done", "deferred"],
   "features": [
     {
