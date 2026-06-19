@@ -10,15 +10,29 @@ on:
     branches: ["**"]
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: harness-ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   governance:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [20, 22]
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: |
+            sandbox/*/package-lock.json
 
       - name: Governance check (harness-doctor)
         run: node scripts/harness-doctor.mjs
@@ -29,7 +43,9 @@ jobs:
       - name: Install sandbox app deps
         run: |
           for d in sandbox/*/; do
-            if [ -f "${d}package.json" ]; then
+            if [ -f "${d}package-lock.json" ]; then
+              (cd "$d" && npm ci --no-audit --no-fund)
+            elif [ -f "${d}package.json" ]; then
               (cd "$d" && npm install --no-audit --no-fund)
             fi
           done

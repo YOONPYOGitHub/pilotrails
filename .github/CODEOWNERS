@@ -1,0 +1,12 @@
+# 코드 오너 — PR 시 자동 리뷰 요청 대상.
+# https://docs.github.com/en/repositories/managing-your-repositories-settings-and-features/customizing-your-repository/about-code-owners
+
+# 기본: 저장소 전체
+*                           @YOONPYOGitHub
+
+# 거버넌스 핵심(변경 시 특히 신중)
+/.github/hooks/             @YOONPYOGitHub
+/.github/copilot-instructions.md   @YOONPYOGitHub
+/scripts/                   @YOONPYOGitHub
+/feature_list.json          @YOONPYOGitHub
+/docs/05-decision-log.md    @YOONPYOGitHub

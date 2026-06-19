@@ -1,0 +1,44 @@
+name: 제안 / 개선 (Proposal)
+description: 새 기능·규칙·장치 제안. 추측성 확장은 보류될 수 있습니다.
+title: "[proposal] "
+labels: ["proposal"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        이 하네스는 **관찰된 실패에만 장치를 추가**합니다([docs/06](../docs/06-harness-operating-plan.md)).
+        제안이 추측성이면 [docs/07-deferred-backlog.md](../docs/07-deferred-backlog.md)에 도입 트리거와 함께 기록될 수 있습니다.
+  - type: textarea
+    id: problem
+    attributes:
+      label: 어떤 마찰/실패를 해결하나
+      description: 책상에서 상상한 문제가 아니라, 실제로 관찰된 마찰이면 그 사례를 적어주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 제안 내용
+    validations:
+      required: true
+  - type: dropdown
+    id: scope
+    attributes:
+      label: 영향 범위
+      multiple: true
+      options:
+        - agents
+        - hooks
+        - instructions
+        - skills
+        - prompts
+        - docs
+        - scripts
+        - sandbox apps
+    validations:
+      required: true
+  - type: textarea
+    id: trigger
+    attributes:
+      label: 도입 트리거(보류 시)
+      description: 어떤 조건이 반복 관찰되면 도입해야 하는지.

@@ -35,8 +35,7 @@ node --test tests/                # 기대: hook 단위 테스트 통과
 | [docs/04-operational-validation.md](docs/04-operational-validation.md) | 실제 VS Code/Copilot에서 에이전트·지침·스킬이 로드·동작하는지 확인하는 수동 운영 검증 체크리스트 |
 | [docs/05-decision-log.md](docs/05-decision-log.md) | 외부 피드백의 채택·기각·보류 결정 로그(근거 포함) |
 | [docs/06-harness-operating-plan.md](docs/06-harness-operating-plan.md) | 하네스를 **잘 작동시키는** 운영·진화 규율 — 스티어링 루프, 컴포넌트 ablation, 거버넌스 게이트, 의도적 보류와 도입 트리거 |
-
-## 설계 핵심
+| [docs/07-deferred-backlog.md](docs/07-deferred-backlog.md) | (백로그) 현재 **보류**한 확장 후보와 각각의 도입 트리거 — init CLI·MCP·텔레메트리·플러그인·eval 실행기 등 |
 
 - **3 모드**: Plan(읽기 전용 탐색) · Build(편집+검증) · Ask(Q&A) — `*.agent.md`의 `tools` 허용 목록으로 강제
 - **Explore 서브에이전트**: 광범위 탐색을 격리해 메인 컨텍스트 보호(읽기 전용, `agents` allowlist)
@@ -63,8 +62,13 @@ node --test tests/                # 기대: hook 단위 테스트 통과
 | [scripts/harness-doctor.mjs](scripts/harness-doctor.mjs) | 거버넌스 검사 — 문서↔훅 보호경로·문서 번호·사장 자산 정합 (`node`로 실행) |
 | [scripts/smoke.mjs](scripts/smoke.mjs) | 검증 앱 스모크 — `sandbox/*` 앱 테스트를 루트에서 일괄 실행(경량 센서) |
 | [tests/hooks.test.mjs](tests/hooks.test.mjs) | hook 순수 로직 단위 테스트(`node --test`, 보호 경로 평가·문서 링크 검사) |
-| [sandbox/task-cli/](sandbox/task-cli/) | 하네스 dogfood 검증 앱(Task CLI) + [세션 저널](sandbox/task-cli/HARNESS-SESSION-LOG.md) |
+| [.github/SECURITY.md](.github/SECURITY.md) · [CONTRIBUTING.md](CONTRIBUTING.md) · [.github/CODEOWNERS](.github/CODEOWNERS) | 공개 협업 위생 — 보안 제보·기여 가이드·코드 오너 |
+| [.github/ISSUE_TEMPLATE/](.github/ISSUE_TEMPLATE/) · [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md) | 이슈·PR 템플릿(실행 표면·에이전트·Preview 상태·검증 증거 강제) |
+| [.github/workflows/codeql.yml](.github/workflows/codeql.yml) · [.github/dependabot.yml](.github/dependabot.yml) | 보안 기본선 — 정적분석(CodeQL)·의존성 업데이트 |
+| [sandbox/task-cli/](sandbox/task-cli/) · [sandbox/expense-cli/](sandbox/expense-cli/) | 하네스 dogfood 검증 앵(Task CLI · Expense CLI) + 각 세션 저널 |
 | [examples/scenarios.md](examples/scenarios.md) | 5개 드라이런 시나리오(버그·기능·리팩터링·테스트·문서) |
+
+> **인벤토리 범위**: [feature_list.json](feature_list.json)은 **하네스 자신의 정책 자산**(agents·instructions·skills·hooks·prompts·doctor·scenarios)만 정본으로 담는다. `scripts/smoke.mjs`·`sandbox/*`·`examples/evals/`는 **검증·시연용 보조 자산**이므로 의도적으로 인벤토리 밖에 둔다(하네스 구성과 먼 생명주기를 분리).
 
 ## Scope and non-goals
 

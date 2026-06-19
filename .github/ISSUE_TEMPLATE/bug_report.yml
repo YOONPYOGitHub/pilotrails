@@ -1,0 +1,61 @@
+name: Bug report
+description: GHCP Harness 동작 이상 제보
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        하네스는 정책 레이어이므로 **어느 표면·어느 에이전트·어느 훅·Preview 상태**에서 났는지가 가장 중요합니다.
+  - type: dropdown
+    id: surface
+    attributes:
+      label: 실행 표면
+      options:
+        - VS Code Agent mode
+        - VS Code Ask/Edit
+        - GitHub Copilot cloud agent
+        - CI
+        - Sandbox app
+    validations:
+      required: true
+  - type: dropdown
+    id: agent
+    attributes:
+      label: 관련 에이전트
+      options:
+        - Plan
+        - Build
+        - Ask
+        - Explore
+        - unspecified
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: VS Code / Copilot 버전
+      placeholder: "예) VS Code 1.xx, Copilot Chat x.y.z"
+  - type: dropdown
+    id: hooks_preview
+    attributes:
+      label: Agent hooks Preview 상태
+      options:
+        - enabled
+        - disabled
+        - unspecified
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 재현 절차
+      description: 입력 프롬프트, 수정 파일, 기대 결과, 실제 결과를 순서대로 적어주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 관련 출력
+      description: harness-doctor / node --test / smoke / hook stderr 등을 붙여주세요.
+      render: shell

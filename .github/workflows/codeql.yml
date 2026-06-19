@@ -1,0 +1,24 @@
+# CodeQL 정적 분석 — JS/TS 보안·품질 검사.
+# 설계: docs/07 보안 기본선. 공개 OSS 위생의 저비용 개선.
+name: codeql
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  schedule:
+    - cron: "25 2 * * 1"
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: javascript-typescript
+      - uses: github/codeql-action/analyze@v3
