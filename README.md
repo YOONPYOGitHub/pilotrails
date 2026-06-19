@@ -37,6 +37,8 @@ node --test tests/                # 기대: hook 단위 테스트 통과
 | [docs/06-harness-operating-plan.md](docs/06-harness-operating-plan.md) | 하네스를 **잘 작동시키는** 운영·진화 규율 — 스티어링 루프, 컴포넌트 ablation, 거버넌스 게이트, 의도적 보류와 도입 트리거 |
 | [docs/07-deferred-backlog.md](docs/07-deferred-backlog.md) | (백로그) 현재 **보류**한 확장 후보와 각각의 도입 트리거 — init CLI·MCP·텔레메트리·플러그인·eval 실행기 등 |
 
+## 설계 핵심
+
 - **3 모드**: Plan(읽기 전용 탐색) · Build(편집+검증) · Ask(Q&A) — `*.agent.md`의 `tools` 허용 목록으로 강제
 - **Explore 서브에이전트**: 광범위 탐색을 격리해 메인 컨텍스트 보호(읽기 전용, `agents` allowlist)
 - **검증 루프**: 기준선 → 편집 → 진단 → 테스트 → 자기수정(신규 실패만, 최대 2회) → 에스컬레이트
