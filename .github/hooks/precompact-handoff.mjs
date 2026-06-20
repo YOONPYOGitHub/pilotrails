@@ -7,11 +7,17 @@ import { pathToFileURL } from "node:url";
 
 export function changedFiles() {
   try {
-    return execFileSync("git", ["status", "--porcelain"], { encoding: "utf8" })
+    return execFileSync("git", ["status", "--porcelain"], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "ignore"],
+    })
       .trim()
       .split("\n")
       .filter(Boolean)
-      .map((l) => l.slice(3));
+      .map((line) => {
+        const match = line.match(/^.. (.+)$/) || line.match(/^. (.+)$/);
+        return match ? match[1] : line.trim();
+      });
   } catch {
     return [];
   }

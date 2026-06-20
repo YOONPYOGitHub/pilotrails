@@ -16,6 +16,7 @@ cd pilotrails
 # 2) 거버넌스·hook 로직이 정상인지 확인(Node 18+)
 node scripts/harness-doctor.mjs   # 기대: "OK — harness-doctor 통과"
 node --test tests/*.test.mjs      # 기대: hook 단위 테스트 통과
+node scripts/hook-smoke.mjs       # 기대: hook CLI payload smoke 통과
 node scripts/smoke.mjs            # 기대: sandbox 앱 테스트/typecheck 통과(또는 대상 없음)
 ```
 
@@ -118,6 +119,7 @@ PilotRails 본체는 VS Code/Copilot이 인식하는 `.github/` 자산이고, `s
 | [.github/prompts/finish.prompt.md](.github/prompts/finish.prompt.md) | `/finish` — 검증→상태 갱신→handoff→커밋 단일 완료 경로 |
 | [feature_list.json](feature_list.json) | PilotRails 자산 상태의 단일 정본(canonical state) |
 | [scripts/harness-doctor.mjs](scripts/harness-doctor.mjs) | 거버넌스 검사 — 문서↔훅 보호경로·문서 번호·사장 자산 정합 (`node`로 실행) |
+| [scripts/hook-smoke.mjs](scripts/hook-smoke.mjs) | hook CLI smoke — Agent hooks stdin/stdout payload 경로 일괄 검증 (`node`로 실행) |
 | [scripts/smoke.mjs](scripts/smoke.mjs) | 검증 앱 스모크 — `sandbox/*` 앱 테스트를 루트에서 일괄 실행(경량 센서) |
 | [tests/hooks.test.mjs](tests/hooks.test.mjs) | hook 순수 로직 단위 테스트(`node --test`, 보호 경로 평가·문서 링크 검사) |
 | [.github/SECURITY.md](.github/SECURITY.md) · [CONTRIBUTING.md](CONTRIBUTING.md) · [.github/CODEOWNERS](.github/CODEOWNERS) | 공개 협업 위생 — 보안 제보·기여 가이드·코드 오너 |

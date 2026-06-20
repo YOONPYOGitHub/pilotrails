@@ -53,6 +53,7 @@ export function runHarnessDoctor() {
   try {
     const out = execFileSync("node", ["scripts/harness-doctor.mjs"], {
       encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
     });
     return { ok: true, output: out };
   } catch (e) {

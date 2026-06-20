@@ -21,6 +21,7 @@
 | 플러그인 / manifest | 현재 자산 수는 수작업 배선과 doctor로 관리 가능하다. | agent, hook, skill 수가 늘어 배선 누락이 반복될 때 |
 | eval 실행기 | 평가할 PilotRails 변형이 아직 많지 않다. | 여러 구성의 결과를 재현 가능하게 비교해야 할 때 |
 | devcontainer / Docker | Node 기반 검사만으로 현재 재현성이 충분하다. | 환경 차이로 검증 실패가 반복될 때 |
+| GitHub Copilot cloud agent target | 현재 하네스는 VS Code 대화형 워크플로와 로컬 Agent hooks Preview를 전제로 한다. cloud agent의 hooks, handoffs, `todo`, sandbox guardrail 동작 차이를 아직 검증하지 않았다. | cloud agent가 workspace custom agents/hooks를 공식 지원하거나, 사용자가 원격 agent에서도 같은 완료 게이트를 요구하는 사례가 반복될 때 |
 
 ## 설계상 비채택
 

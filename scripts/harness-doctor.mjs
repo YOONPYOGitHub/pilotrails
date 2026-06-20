@@ -10,9 +10,10 @@
 
 import { readFileSync, readdirSync, existsSync, statSync } from "node:fs";
 import { resolve, dirname, join, relative } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const DEFAULT_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+const ROOT = process.env.PILOTRAILS_ROOT ? resolve(process.env.PILOTRAILS_ROOT) : DEFAULT_ROOT;
 const fails = [];
 const oks = [];
 
@@ -63,7 +64,7 @@ function collectText(dir, acc = { files: [], blob: "", entries: [] }) {
 
 // --- 1. 보호 경로 정합 ---
 async function checkProtectedPaths() {
-  const { PROTECTED } = await import("../.github/hooks/protect-paths.mjs");
+  const { PROTECTED } = await import(pathToFileURL(resolve(ROOT, ".github/hooks/protect-paths.mjs")).href);
   const design = read("docs/02-ghcp-harness-design.md");
   const hooksConfig = JSON.parse(read(".github/hooks/hooks.json"));
 
