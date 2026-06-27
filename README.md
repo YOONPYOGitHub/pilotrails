@@ -14,6 +14,7 @@ git clone https://github.com/YOONPYOGitHub/pilotrails.git
 cd pilotrails
 
 # 2) 거버넌스·hook 로직이 정상인지 확인(Node 18+)
+node scripts/ready.mjs            # 현재 git/feature 상태와 권장 검증 명령 요약
 node scripts/harness-doctor.mjs   # 기대: "OK — harness-doctor 통과"
 node --test tests/*.test.mjs      # 기대: hook 단위 테스트 통과
 node scripts/hook-smoke.mjs       # 기대: hook CLI payload smoke 통과
@@ -116,9 +117,10 @@ PilotRails 본체는 VS Code/Copilot이 인식하는 `.github/` 자산이고, `s
 | [.github/skills/](.github/skills/) | 온디맨드 절차(test-debugging·release-checklist·repo-map) |
 | [.github/hooks/](.github/hooks/) | **기계적 강제**(Agent hooks) — PreToolUse 보호경로 차단·PostToolUse 포맷 검사·Stop 검증 게이트 |
 | [.github/workflows/harness-ci.yml](.github/workflows/harness-ci.yml) | **CI 검증** — push·PR마다 harness-doctor·hook 테스트·스모크를 원격 강제(로컬 Preview 의존 보완) |
-| [.github/prompts/finish.prompt.md](.github/prompts/finish.prompt.md) | `/finish` — 검증→상태 갱신→handoff→커밋 단일 완료 경로 |
+| [.github/prompts/finish.prompt.md](.github/prompts/finish.prompt.md) | `/finish` — 검증→비판적 리뷰→상태 갱신→handoff→커밋 단일 완료 경로 |
 | [feature_list.json](feature_list.json) | PilotRails 자산 상태의 단일 정본(canonical state) |
 | [scripts/harness-doctor.mjs](scripts/harness-doctor.mjs) | 거버넌스 검사 — 문서↔훅 보호경로·문서 번호·사장 자산 정합 (`node`로 실행) |
+| [scripts/ready.mjs](scripts/ready.mjs) | 세션 시작 점검 — git 상태·feature 요약·권장 검증 명령 출력, `--full`로 전체 검증 실행 |
 | [scripts/hook-smoke.mjs](scripts/hook-smoke.mjs) | hook CLI smoke — Agent hooks stdin/stdout payload 경로 일괄 검증 (`node`로 실행) |
 | [scripts/smoke.mjs](scripts/smoke.mjs) | 검증 앱 스모크 — `sandbox/*` 앱 테스트를 루트에서 일괄 실행(경량 센서) |
 | [tests/hooks.test.mjs](tests/hooks.test.mjs) | hook 순수 로직 단위 테스트(`node --test`, 보호 경로 평가·문서 링크 검사) |
@@ -127,6 +129,7 @@ PilotRails 본체는 VS Code/Copilot이 인식하는 `.github/` 자산이고, `s
 | [.github/workflows/codeql.yml](.github/workflows/codeql.yml) · [.github/dependabot.yml](.github/dependabot.yml) | 보안 기본선 — 정적분석(CodeQL)·의존성 업데이트 |
 | [sandbox/task-cli/](sandbox/task-cli/) · [sandbox/expense-cli/](sandbox/expense-cli/) | PilotRails dogfood 검증 앱(Task CLI · Expense CLI) + 각 세션 저널 |
 | [examples/scenarios.md](examples/scenarios.md) | 5개 드라이런 시나리오(버그·기능·리팩터링·테스트·문서) |
+| [examples/evals/README.md](examples/evals/README.md) | 하네스 효과 평가 ledger — with/without harness 결과와 증거 기록 |
 
 > **인벤토리 범위**: [feature_list.json](feature_list.json)은 **PilotRails 자신의 정책 자산**(agents·instructions·skills·hooks·prompts·doctor·scenarios)만 정본으로 담는다. `scripts/smoke.mjs`·`sandbox/*`·`examples/evals/`는 **검증·시연용 보조 자산**이므로 의도적으로 인벤토리 밖에 둔다(PilotRails 구성과 먼 생명주기를 분리).
 

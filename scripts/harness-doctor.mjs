@@ -82,6 +82,14 @@ async function checkProtectedPaths() {
     ok(`보호 경로 ${PROTECTED.length}개 모두 존재·문서 명시됨`);
 }
 
+// acceptance(DoD)는 비어있지 않은 문자열 또는 비어있지 않은 문자열 배열을 허용한다.
+function hasAcceptance(value) {
+  if (typeof value === "string") return value.trim().length > 0;
+  if (Array.isArray(value))
+    return value.length > 0 && value.every((v) => typeof v === "string" && v.trim().length > 0);
+  return false;
+}
+
 // --- 2. 문서 수치 ↔ 실제 ---
 function checkCounts() {
   const list = JSON.parse(read("feature_list.json"));
@@ -91,7 +99,7 @@ function checkCounts() {
   }
   const allowedStatuses = new Set(list.statuses || []);
   const featureIds = new Set(list.features.map((f) => f.id));
-  // 모든 feature.path 존재
+  // 모든 feature.path 존재 + 비어있지 않은 acceptance(DoD)
   for (const f of list.features) {
     if (!f.id) fail("feature_list 항목 id 없음");
     if (!allowedStatuses.has(f.status))
@@ -101,6 +109,8 @@ function checkCounts() {
     }
     if (!f.path || !existsSync(resolve(ROOT, f.path)))
       fail(`feature_list 항목 경로 없음: ${f.id} → ${f.path}`);
+    if (!hasAcceptance(f.acceptance))
+      fail(`feature_list 항목 acceptance(DoD) 없음/비어있음: ${f.id}`);
   }
   // 에이전트 수: 실제 파일 ↔ feature_list agent-* ↔ 문서 주장
   const agentFiles = readdirSync(resolve(ROOT, ".github/agents")).filter((n) =>

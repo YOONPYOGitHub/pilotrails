@@ -14,12 +14,41 @@
 
 VS Code에서 이 저장소를 **워크스페이스 루트로 열어야** `.github/`의 에이전트·instructions·hooks가 인식된다.
 
+### 0-1. 세션 시작 점검
+
+새 세션을 열었거나 clone 직후 상태를 빠르게 보려면 다음 명령을 먼저 실행한다.
+
+```bash
+node scripts/ready.mjs
+```
+
+기대: git 브랜치·dirty 상태, [feature_list.json](../feature_list.json) 진행 요약, 권장 검증 명령이 출력된다. 이 명령은 기본 실행에서 테스트를 돌리지 않고 현재 상태를 요약한다.
+
+전체 검증까지 한 번에 실행하려면 다음을 쓴다.
+
+```bash
+node scripts/ready.mjs --full
+```
+
+기대: [scripts/harness-doctor.mjs](../scripts/harness-doctor.mjs), `node --test tests/*.test.mjs`, [scripts/hook-smoke.mjs](../scripts/hook-smoke.mjs), [scripts/smoke.mjs](../scripts/smoke.mjs)가 순서대로 통과하고 마지막에 `OK — ready full verification 통과`가 출력된다.
+
 ## 1. 두 가지 테스트 경로
 
 PilotRails는 두 층위로 나눠 테스트한다.
 
 1. **거버넌스·hooks 층 (터미널에서, 사람이 직접)** — Copilot 없이 `node`로 스크립트와 hook을 직접 실행해 "차단/허용/검증" 로직이 맞는지 본다. 결정론적이라 회귀 테스트에 적합하다. → [2장](#2-거버넌스hooks-직접-테스트-터미널)
 2. **에이전트·대화 층 (VS Code Copilot 채팅에서)** — Plan/Build/Ask 모드를 골라 실제 작업을 시키고, 규칙·hooks가 끼어드는지 관찰한다. → [3장](#3-에이전트-대화-직접-테스트-vs-code)
+
+운영 루프는 보통 다음 순서로 돈다.
+
+| 단계 | 수행 | 확인 |
+| --- | --- | --- |
+| 세션 시작 | `node scripts/ready.mjs` | 현재 git 상태와 feature 요약 확인 |
+| 작업 전 | Plan 또는 Ask로 영향 범위·검증 계획 확인 | 편집 전 기준선 명령 결정 |
+| 구현 중 | Build로 작은 단위 편집·검증 | 신규 실패만 수정, 같은 실패 최대 2회 |
+| 완료 | `/finish` 또는 동등 검증 절차 | 실제 출력 근거, 상태 정합, 커밋 경계 확인 |
+| 릴리스·공유 | release checklist 후 push | 비가역·공유 영향 작업은 사용자 승인 후 실행 |
+
 
 ## 2. 거버넌스·hooks 직접 테스트 (터미널)
 
@@ -197,5 +226,11 @@ node scripts/harness-doctor.mjs && node --test tests/*.test.mjs && node scripts/
 ```
 
 기대: 모든 검사 통과 후 `ALL GREEN`. 하나라도 실패하면 그 지점에서 멈춘다.
+
+같은 검증 묶음을 PilotRails가 직접 확장해 실행하게 하려면 다음을 사용한다.
+
+```bash
+node scripts/ready.mjs --full
+```
 
 sandbox 앱 테스트까지 모두 실행하는 로컬 전체 검증은 2-2장의 의존성 설치 루프를 먼저 수행한 뒤 실행한다. 완료 보고에는 `smoke` 출력의 `실행`과 `건너뜀` 수를 함께 적는다.

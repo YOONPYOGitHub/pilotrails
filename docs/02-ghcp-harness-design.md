@@ -35,7 +35,7 @@ feature_list.json  # PilotRails 정책 자산 상태 정본
 [feature_list.json](../feature_list.json)은 PilotRails 정책 자산의 상태를 담는 단일 정본이다. `status` 변경은 [/finish](../.github/prompts/finish.prompt.md)를 통해서만 수행한다.
 
 이 규칙은 상태 드리프트를 막기 위한 것이다. 문서나 대화에는 계획을 적을 수 있지만, 완료 상태는 하나의 파일과 하나의 경로로만 바꾼다.
-
+각 feature는 비어있지 않은 `acceptance`(완료 기준, DoD)를 가져야 하며, [scripts/harness-doctor.mjs](../scripts/harness-doctor.mjs)가 이를 검사한다. `acceptance`는 문자열 또는 비어있지 않은 문자열 배열을 허용한다(항목별 DoD를 나눠 적을 때 배열 사용).
 ## 4. 보호 경로
 
 다음 경로는 직접 편집 시 hook이 deny/ask 정책을 적용한다.

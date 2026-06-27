@@ -69,6 +69,7 @@ function createMinimalHarnessRoot({ designText, protectedRules = DEFAULT_PROTECT
           path: ".github/agents/plan.agent.md",
           status: "done",
           deps: [],
+          acceptance: ["plan 에이전트 fixture: edit/execute 없음"],
         },
       ],
     }),
@@ -135,6 +136,35 @@ test("harness-doctor는 최소 하네스 fixture가 정합하면 통과한다", 
     const result = runDoctor(root);
     assert.equal(result.status, 0);
     assert.match(result.output, /OK — harness-doctor 통과/);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("harness-doctor는 acceptance(DoD)가 비어있으면 실패한다", () => {
+  const root = createMinimalHarnessRoot({
+    designText:
+      "# design\nfeature_list.json\n.github/copilot-instructions.md\ndocs/05-decision-log.md\n.github/hooks/\n",
+  });
+  try {
+    writeFileSync(
+      join(root, "feature_list.json"),
+      JSON.stringify({
+        statuses: ["done"],
+        features: [
+          {
+            id: "agent-plan",
+            path: ".github/agents/plan.agent.md",
+            status: "done",
+            deps: [],
+            acceptance: "",
+          },
+        ],
+      }),
+    );
+    const result = runDoctor(root);
+    assert.equal(result.status, 1);
+    assert.match(result.output, /acceptance\(DoD\) 없음\/비어있음/);
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
