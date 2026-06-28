@@ -14,7 +14,7 @@ node scripts/smoke.mjs            # 샌드박스 앱 스모크(앱별 npm instal
 
 전제: Node 18+, VS Code + GitHub Copilot Chat.
 
-## 핵심 규칙 (반드시 지킬 것)
+## 핵심 규칙
 
 이 규칙들은 [.github/copilot-instructions.md](.github/copilot-instructions.md)의 불변 규칙과 일치한다.
 

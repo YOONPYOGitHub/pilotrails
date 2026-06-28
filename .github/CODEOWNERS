@@ -4,7 +4,7 @@
 # 기본: 저장소 전체
 *                           @YOONPYOGitHub
 
-# 거버넌스 핵심(변경 시 특히 신중)
+# 거버넌스 핵심
 /.github/hooks/             @YOONPYOGitHub
 /.github/copilot-instructions.md   @YOONPYOGitHub
 /scripts/                   @YOONPYOGitHub

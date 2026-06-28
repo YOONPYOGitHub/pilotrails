@@ -5,7 +5,7 @@ argument-hint: '요약할 저장소 범위나 대상 모듈'
 ---
 # Repo Map (문서형)
 
-aider의 tree-sitter repo map을 **수동/에이전트 작성 템플릿**으로 근사한 스킬. 자동 생성 스크립트가 아니다(tree-sitter·ctags 미도입 — 근거: [docs/02 §3.3](../../../docs/02-ghcp-harness-design.md)). Plan·Explore가 큰 작업 전에 구조를 요약해 Build의 편집 범위를 좁히게 한다.
+aider의 tree-sitter repo map을 **수동/에이전트 작성 템플릿**으로 근사한 스킬. 자동 생성 스크립트가 아니다(tree-sitter·ctags 미도입 — 근거: [docs/02 §7](../../../docs/02-ghcp-harness-design.md)). Plan·Explore가 큰 작업 전에 구조를 요약해 Build의 편집 범위를 좁히게 한다.
 
 ## 언제 쓰나
 
