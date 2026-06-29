@@ -34,7 +34,7 @@
 | E-002 | 작은 기능 추가 | 미실행 | 미실행 | 미실행 | [../scenarios.md](../scenarios.md) 2번 기준만 존재 | 대기 |
 | E-003 | 대형 리팩터링 | 미실행 | 미실행 | 미실행 | [../scenarios.md](../scenarios.md) 3번 기준만 존재 | 대기 |
 | E-004 | 테스트 실패 디버깅 | 미실행 | 미실행 | 미실행 | [../scenarios.md](../scenarios.md) 4번 기준만 존재 | 대기 |
-| E-005 | 문서 편집 | 2026-06-27 | 미실행 | P0 문서·ready 보강에 Plan/Build식 검증 루프 적용 | `node scripts/ready.mjs --full` 통과, Node tests 29개, sandbox smoke 실행 2 건너뜀 0 | 부분 증거 |
+| E-005 | 문서 편집 | 2026-06-29 | 미실행 | 영어 요약·eval 갱신을 Plan/Build식 검증 루프로 반영, 보호경로(feature_list.json) 직접 편집은 가드가 차단 | `node scripts/ready.mjs --full` 통과 — Node tests 30, hook-smoke 6, sandbox smoke 실행 2 건너뜀 0; feature_list.json 편집 시 PreToolUse deny 확인 | 통과 |
 
 ## 결과 상세 템플릿
 

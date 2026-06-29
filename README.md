@@ -4,6 +4,10 @@ Copilot-native rails for safe agentic coding.
 
 PilotRails는 GitHub Copilot / VS Code Agent Mode를 위한 **AI 코딩 에이전트 governance harness**다. VS Code Copilot의 커스텀 에이전트·instructions·skills·Agent hooks를 조합해 **계획→탐색→구현→검증→완료** 흐름을 규율한다. 모델 런타임을 새로 만들지 않고 `.github/` 자산만으로 동작한다.
 
+## In English (1-min overview)
+
+PilotRails is a **governance harness for GitHub Copilot / VS Code Agent Mode**. It adds no new model runtime — only `.github/` assets that enforce a **Plan → Explore → Build → Verify → Finish** flow. Three agents (Plan = read-only, Build = edit + verify, Ask = Q&A) are constrained by tool allowlists; an Explore subagent isolates broad searches to protect main context. Agent hooks (Preview) plus CI block edits to protected paths and gate completion on real verification, so "done" means *diff + tests actually run green*, not LLM self-confidence. Try it in 30 seconds: `git clone` then `node scripts/ready.mjs --full` (expects 30 node tests + smoke green).
+
 ## Quick Start (clone & use)
 
 PilotRails는 별도 설치형 프로그램이 아니라 VS Code Copilot이 읽는 커스터마이제이션 자산으로 동작한다. 이 저장소를 직접 확인하는 가장 빠른 길:
